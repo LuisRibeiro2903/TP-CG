@@ -1,16 +1,18 @@
 #include <vector>
 #include "point.hpp"
 
-std::vector<Point> generatePlane(float length, int divisions)
+using namespace std;
+
+vector<Point> generatePlane(float length, int divisions)
 {
-    std::vector<Point> vertices;
+    vector<Point> vertices;
 
     float step = length / divisions;
 
     float halfLength = length / 2.0f;
 
     for (int i = 0; i < divisions; i++) {
-        for (int j = 0; j <= divisions; j++) {
+        for (int j = 0; j < divisions; j++) {
             
             // Calculate vertices for the current square
             float x0 = -halfLength + j * step;

@@ -1,0 +1,1 @@
+/usr/bin/c++  -Wno-deprecated -rdynamic CMakeFiles/engine.dir/src/engine/engine_main.cpp.o -o engine  -lGL -lGLU -lglut -lXmu -lXi -lGLEW 

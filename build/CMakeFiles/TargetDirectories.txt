@@ -1,0 +1,4 @@
+/home/Samba/Code/Uni/3ano/CG_TP/build/CMakeFiles/engine.dir
+/home/Samba/Code/Uni/3ano/CG_TP/build/CMakeFiles/generator.dir
+/home/Samba/Code/Uni/3ano/CG_TP/build/CMakeFiles/edit_cache.dir
+/home/Samba/Code/Uni/3ano/CG_TP/build/CMakeFiles/rebuild_cache.dir

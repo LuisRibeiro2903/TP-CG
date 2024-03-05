@@ -48,7 +48,7 @@ void renderScene(void)
 
     //Reset transformations
     glLoadIdentity();
-    gluLookAt(5.0f, 5.0f, 5.0f,    // Position of the camera
+    gluLookAt(3.0f, 5.0f, 4.0f,    // Position of the camera
               0.0f, 0.0f, 0.0f,    // Point to where the camera is looking
               0.0f, 1.0f, 0.0f);   // Vector that points upwards
 
@@ -110,7 +110,7 @@ int main (int argc, char** argv) {
 
 //  OpenGL settings
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 

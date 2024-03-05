@@ -1,16 +1,19 @@
 cmake_minimum_required(VERSION 3.5)
 
 # Project Name
-PROJECT(tp_cg)
+PROJECT(CG_G31)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 
-file(GLOB SOURCES "src/shared/*.cpp")
-set(SOURCES ${SOURCES} src/engine/engine_main.cpp src/engine/parser.cpp)
+file(GLOB SOURCES_SHARED "src/shared/*.cpp")
 
+set(SOURCES_ENGINE ${SOURCES_SHARED} src/engine/engine_main.cpp src/engine/parser.cpp)
+set(SOURCES_GENERATOR ${SOURCES_SHARED} src/generator/generator_main.cpp src/generator/plane.cpp)
 
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(engine ${SOURCES_ENGINE})
+add_executable(generator ${SOURCES_GENERATOR})
+
 
 
 find_package(OpenGL REQUIRED)
@@ -37,9 +40,13 @@ if  (WIN32)
 
 	
 	include_directories(${TOOLKITS_FOLDER}/glut ${TOOLKITS_FOLDER}/glew)
-	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} 
+	target_link_libraries(engine ${OPENGL_LIBRARIES} 
 										  ${TOOLKITS_FOLDER}/glut/glut32.lib 
 										  ${TOOLKITS_FOLDER}/glew/glew32.lib )
+
+	target_link_libraries(generator ${OPENGL_LIBRARIES} 
+										  ${TOOLKITS_FOLDER}/glut/glut32.lib 
+										  ${TOOLKITS_FOLDER}/glew/glew32.lib )									  
 	
 	if (EXISTS "${TOOLKITS_FOLDER}/glut/glut32.dll"  AND EXISTS "${TOOLKITS_FOLDER}/glew/glew32.dll")
 		file(COPY ${TOOLKITS_FOLDER}/glut/glut32.dll DESTINATION ${CMAKE_BINARY_DIR})
@@ -61,22 +68,17 @@ else (WIN32) #Linux and Mac
 		find_package(GLEW REQUIRED)
 		include_directories(${GLEW_INCLUDE_DIRS})
 		link_libraries(${GLEW_LIBRARIES})
-		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})
+		target_link_libraries(engine ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})
+		target_link_libraries(generator ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} ${GLEW_LIBRARIES})
 	else (NOT APPLE)
-		target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+		target_link_libraries(engine ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+		target_link_libraries(generator ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
 	endif(NOT APPLE)
 
-	target_link_libraries(${PROJECT_NAME} ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+	target_link_libraries(engine ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
+	target_link_libraries(generator ${OPENGL_LIBRARIES} ${GLUT_LIBRARIES} )
 	if(NOT GLUT_FOUND)
 	   message(ERROR ": GLUT not found!")
 	endif(NOT GLUT_FOUND)
 	
 endif(WIN32)
-
-
-
-
-
-
-
-

@@ -22,11 +22,11 @@ vector<Point> generatePlane(float length, int divisions)
 
             // Add vertices for the two triangles in the square
             vertices.emplace_back(x0, 0.0f, z0);
+            vertices.emplace_back(x1, 0.0f, z1);
             vertices.emplace_back(x1, 0.0f, z0);
-            vertices.emplace_back(x1, 0.0f, z1);
             vertices.emplace_back(x0, 0.0f, z0);
-            vertices.emplace_back(x1, 0.0f, z1);
             vertices.emplace_back(x0, 0.0f, z1);
+            vertices.emplace_back(x1, 0.0f, z1);
         }
     }
 

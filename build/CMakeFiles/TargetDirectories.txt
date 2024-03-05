@@ -1,3 +1,0 @@
-/home/luis/MyGit/TP-CG/build/CMakeFiles/rebuild_cache.dir
-/home/luis/MyGit/TP-CG/build/CMakeFiles/edit_cache.dir
-/home/luis/MyGit/TP-CG/build/CMakeFiles/tp_cg.dir

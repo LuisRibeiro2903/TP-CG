@@ -1,5 +1,5 @@
-#include <vector>
 #include "point.hpp"
+#include <vector>
 
 using namespace std;
 
@@ -7,9 +7,9 @@ vector<Point> generatePlane(float length, int divisions)
 {
     vector<Point> vertices;
 
-    float step = length / divisions;
+  float step = length / divisions;
 
-    float halfLength = length / 2.0f;
+  float halfLength = length / 2.0f;
 
     for (int i = 0; i < divisions; i++) {
         for (int j = 0; j < divisions; j++) {
@@ -30,5 +30,5 @@ vector<Point> generatePlane(float length, int divisions)
         }
     }
 
-    return vertices;
+  return vertices;
 }

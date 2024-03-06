@@ -33,6 +33,19 @@ int main(int argc, char *argv[]) {
     int divisions = std::stoi(argv[3]);
     std::string output_file_name = argv[4];
     write3dFile(generatePlane(length, divisions), output_file_name);
+
+  } else if (primitive == "sphere") {
+    if (argc < 6) {
+      std::cerr << "Usage: " << argv[0] << " sphere " << std::endl;
+      return 1;
+    }
+
+    float radius = std::stof(argv[2]);
+    int slices = std::stoi(argv[3]);
+    int stacks = std::stoi(argv[4]);
+    std::string output_file_name = argv[5];
+    write3dFile(generateSphere(radius, slices, stacks), output_file_name);
+
   } else {
     std::cerr << "Unknown primitive: " << primitive << std::endl;
     return 1;

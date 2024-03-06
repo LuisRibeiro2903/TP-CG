@@ -1,7 +1,40 @@
 #include "point.hpp"
-#include <algorithm>
 #include <cmath>
 #include <vector>
+
+// can be replaced for triang strip draw method
+void drawMidStacks(std::vector<Point> points, float radius, int stacks,
+                   float cur_hor, float next_hor, float ver_step) {
+  float cur_ver, next_ver;
+  next_ver = 90.0f - ver_step;
+  for (int i = 2; i < stacks; i++) {
+    cur_ver = next_ver;
+    next_ver = 90.0f - i * ver_step;
+
+    // triangle with 2 points on top
+    Point p1(radius * cos(cur_hor), radius * sin(cur_ver),
+             radius * sin(cur_hor));
+    Point p2(radius * cos(next_hor), radius * sin(cur_ver),
+             radius * sin(next_hor));
+    Point p3(radius * cos(cur_hor), radius * sin(next_ver),
+             radius * sin(cur_hor));
+
+    // triangle with 2 points on bot
+    Point p4(radius * cos(next_hor), radius * sin(cur_ver),
+             radius * sin(next_hor));
+    Point p5(radius * cos(cur_hor), radius * sin(next_ver),
+             radius * sin(cur_hor));
+    Point p6(radius * cos(next_hor), radius * sin(next_ver),
+             radius * sin(next_hor));
+
+    points.push_back(p1);
+    points.push_back(p2);
+    points.push_back(p3);
+    points.push_back(p4);
+    points.push_back(p5);
+    points.push_back(p6);
+  }
+}
 
 std::vector<Point> generateSphere(float radius, int slices, int stacks) {
   std::vector<Point> points;
@@ -39,11 +72,11 @@ std::vector<Point> generateSphere(float radius, int slices, int stacks) {
     points.push_back(b2);
     points.push_back(b3);
 
-    // remove top and bot
-    stacks -= 2;
-    if (stacks > 0) {
-      angle_cur_ver = angle_init_ver;
+    // draw mid part if any
+    if (stacks > -2) {
       for (int i = 0; i < stacks; i++) {
+        drawMidStacks(points, radius, stacks, angle_cur_hor, angle_next_hor,
+                      angle_step_ver);
       }
     }
   }

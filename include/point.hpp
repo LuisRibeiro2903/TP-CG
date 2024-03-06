@@ -13,6 +13,10 @@ class Point {
         float x() const;
         float y() const;
         float z() const;
+
+        void setX(float x);
+        void setY(float y);
+        void setZ(float z);
 };
 
 #endif

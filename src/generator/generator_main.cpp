@@ -25,7 +25,7 @@ int main (int argc, char *argv[]) {
 
     if (primitive == "plane")
     {
-        if (argc < 5) {
+        if (argc != 5) {
             std::cerr << "Usage: " << argv[0] << " plane <length> <divisions> <output_file_name.3d" << std::endl;
             return 1;
         }
@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
     }
     else if (primitive == "sphere")
     {
-        if (argc < 6) {
+        if (argc != 6) {
             std::cerr << "Usage: " << argv[0] << " sphere <radius> <slices> <stacks> <output_file_name.3d" << std::endl;
             return 1;
         }
@@ -45,6 +45,17 @@ int main (int argc, char *argv[]) {
         int stacks = std::stoi(argv[4]);
         std::string output_file_name = argv[5];
         write3dFile(generateSphere(radius, slices, stacks), output_file_name);
+    }
+    else if (primitive == "box")
+    {
+        if (argc != 5) {
+            std::cerr << "Usage: " << argv[0] << " box <dimension> <divisions> <output_file_name.3d" << std::endl;
+            return 1;
+        }
+        float dimension = std::stof(argv[2]);
+        int divisions = std::stoi(argv[3]);
+        std::string output_file_name = argv[4];
+        write3dFile(generateBox(dimension, divisions), output_file_name);
     }
     else {
         std::cerr << "Unknown primitive: " << primitive << std::endl;

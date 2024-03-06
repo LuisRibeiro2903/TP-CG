@@ -1,16 +1,18 @@
-#include <vector>
 #include "point.hpp"
+#include <vector>
 
-std::vector<Point> generatePlane(float length, int divisions)
+using namespace std;
+
+vector<Point> generatePlane(float length, int divisions)
 {
-    std::vector<Point> vertices;
+    vector<Point> vertices;
 
-    float step = length / divisions;
+  float step = length / divisions;
 
-    float halfLength = length / 2.0f;
+  float halfLength = length / 2.0f;
 
     for (int i = 0; i < divisions; i++) {
-        for (int j = 0; j <= divisions; j++) {
+        for (int j = 0; j < divisions; j++) {
             
             // Calculate vertices for the current square
             float x0 = -halfLength + j * step;
@@ -20,13 +22,13 @@ std::vector<Point> generatePlane(float length, int divisions)
 
             // Add vertices for the two triangles in the square
             vertices.emplace_back(x0, 0.0f, z0);
+            vertices.emplace_back(x1, 0.0f, z1);
             vertices.emplace_back(x1, 0.0f, z0);
-            vertices.emplace_back(x1, 0.0f, z1);
             vertices.emplace_back(x0, 0.0f, z0);
-            vertices.emplace_back(x1, 0.0f, z1);
             vertices.emplace_back(x0, 0.0f, z1);
+            vertices.emplace_back(x1, 0.0f, z1);
         }
     }
 
-    return vertices;
+  return vertices;
 }

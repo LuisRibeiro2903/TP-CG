@@ -1,23 +1,46 @@
 #include "point.hpp"
-#include <cmath>
+#include <math.h>
 #include <vector>
 
-std::vector<Point> generateSphere(float radius, int slices, int stacks) {
-  std::vector<Point> points;
+std::vector<Point> generateSphere(float radius, int slices, int stacks) 
+{
+    std::vector<Point> vertices;
 
-  for (int stack = 0; stack <= stacks; ++stack) {
-    float phi = M_PI * stack / stacks;
+    float alpha = 2 * M_PI / slices; // angle between slices
+    float beta = M_PI / stacks; // angle between stacks
 
-    for (int slice = 0; slice < slices; ++slice) {
-      float theta = 2 * M_PI * slice / slices;
+    for (int stack = 0; stack < stacks; stack++) 
+    {
+        float beta_now = M_PI / 2 - stack * beta;
 
-      float x = radius * std::sin(phi) * std::cos(theta);
-      float y = radius * std::cos(phi);
-      float z = radius * std::sin(phi) * std::sin(theta);
+        for (int slice = 0; slice < slices; slice++) 
+        {
+            float alpha_now = slice * alpha;
 
-      points.push_back(Point(x, y, z));
+            /*
+            p2 --- p1
+            | \    |
+            |  \   |            
+            |   \  |
+            |    \ |
+            |     \|
+            p4 --- p3
+            */    
+
+            Point p1 = Point(radius * cos(beta_now) * sin(alpha_now), radius * sin(beta_now), radius * cos(beta_now) * cos(alpha_now));
+            Point p2 = Point(radius * cos(beta_now) * sin(alpha_now + alpha), radius * sin(beta_now), radius * cos(beta_now) * cos(alpha_now + alpha));
+            Point p3 = Point(radius * cos(beta_now + beta) * sin(alpha_now), radius * sin(beta_now + beta), radius * cos(beta_now + beta) * cos(alpha_now));
+            Point p4 = Point(radius * cos(beta_now + beta) * sin(alpha_now + alpha), radius * sin(beta_now + beta), radius * cos(beta_now + beta) * cos(alpha_now + alpha));
+
+            vertices.push_back(p1);
+            vertices.push_back(p2);
+            vertices.push_back(p3);
+
+            vertices.push_back(p3);
+            vertices.push_back(p2);
+            vertices.push_back(p4);
+        }
     }
-  }
 
-  return points;
+    return vertices;
 }

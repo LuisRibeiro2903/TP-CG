@@ -11,11 +11,20 @@ file(GLOB SOURCES_SHARED "src/shared/*.cpp")
 set(SOURCES_ENGINE ${SOURCES_SHARED} src/engine/engine_main.cpp src/engine/parser.cpp)
 set(SOURCES_GENERATOR ${SOURCES_SHARED} src/generator/generator_main.cpp src/generator/plane.cpp src/generator/sphere.cpp src/generator/box.cpp)
 
+
 add_executable(engine ${SOURCES_ENGINE})
 add_executable(generator ${SOURCES_GENERATOR})
 
+set_target_properties(engine PROPERTIES 
+			CXX_STANDARD 17
+			CXX_STANDARD_REQUIRED YES
+			CXX_EXTENSIONS NO)
 
-
+set_target_properties(generator PROPERTIES 
+			CXX_STANDARD 17
+			CXX_STANDARD_REQUIRED YES
+			CXX_EXTENSIONS NO)
+			
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS} include)
 link_directories(${OpenGL_LIBRARY_DIRS})

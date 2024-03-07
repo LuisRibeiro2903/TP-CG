@@ -7,7 +7,7 @@
 #include "point.hpp"
 #include "tinyxml2.h"
 
-using std::vector;
+using std::vector, std::string;
 
 class ParsedWorld {
     public:
@@ -24,7 +24,7 @@ class ParsedWorld {
                     std::vector<std::string>& models);
 };
 
-vector<Point> parse3dFile (const char* filename);
+vector<vector<Point>> parse3dFile (vector<string> models);
 
 ParsedWorld worldParser (const char* filename);
 

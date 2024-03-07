@@ -13,35 +13,31 @@ ParsedWorld::ParsedWorld(std::array<Point, 3>& lookAt,
 
 }
 
-vector<Point> parse3dFile (const char* filename) 
+vector<vector<Point>> parse3dFile (vector<string> models) 
 {
-    vector<Point> vertices;
-
-    std::ifstream file(filename);
-    if (!file.good()) {
-        std::cerr << "Error: file not found" << std::endl;
-        exit(1);
-    }
-
-    std::string line;
-
-    std::getline(file, line);
-
-    unsigned int numVertices = std::stoi(line);
-    vertices.reserve(numVertices);
-    for(int i = 0; i < numVertices; i++)
+    vector<vector<Point>> all_vertices;
+    for (string model : models)
     {
-        std::getline(file, line);
-        float x, y, z;
-        if(sscanf(line.c_str(), "%f,%f,%f", &x, &y, &z) != 3)
+        vector<Point> vertices;
+        std::ifstream file (model);
+        if (!file.is_open())
         {
-            std::cerr << "Error: invalid file format" << std::endl;
+            std::cerr << "Error: file not found" << std::endl;
             exit(1);
         }
-        vertices.emplace_back(x, y, z);
+        int n_vertices;
+        file >> n_vertices;
+        for (int i = 0; i < n_vertices; i++)
+        {
+            float x, y, z;
+            char comma;
+            file >> x >> comma >> y >> comma >> z;
+            vertices.push_back(Point(x, y, z));
+        }
+        all_vertices.push_back(vertices);
+        file.close();
     }
-    
-    return vertices;
+    return all_vertices;
 }
 
 ParsedWorld worldParser (const char* filename)

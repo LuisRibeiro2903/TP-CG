@@ -16,7 +16,8 @@ float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
 float fov, near, far;
-GLuint vertices, verticeCount;
+vector<GLuint> vertices;
+vector<GLuint> verticeCount;
 
 void changeSize(int w, int h) {
 
@@ -71,9 +72,12 @@ void renderScene(void)
 	glEnd();
 
     glColor3f(1.0f, 1.0f, 1.0f);
-    glBindBuffer(GL_ARRAY_BUFFER, vertices);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, verticeCount);
+	for(size_t i = 0; i < vertices.size(); i++)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
+		glVertexPointer(3, GL_FLOAT, 0, 0);
+		glDrawArrays(GL_TRIANGLES, 0, verticeCount[i]);
+	}
 
     glutSwapBuffers();
 }
@@ -103,15 +107,17 @@ int main (int argc, char** argv) {
 	near = world._projection[1];
 	far = world._projection[2];
 
-	std::vector<Point> vertices_parsed = parse3dFile(world._models[0].c_str());
-    verticeCount = vertices_parsed.size();
+	std::vector<std::vector<Point>> vertices_parsed = parse3dFile(world._models);
+	for (int i = 0; i < vertices_parsed.size(); i++)
+	{
+		verticeCount.push_back(vertices_parsed[i].size());
+	}
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(world._windowWidth, world._windowHeight);
     glutCreateWindow("CONIG-COIN");
-
     glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);	
 	glutReshapeFunc(changeSize);
@@ -121,9 +127,15 @@ int main (int argc, char** argv) {
     #endif
 
 	
-    glGenBuffers(1, &vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, vertices);
-    glBufferData(GL_ARRAY_BUFFER, vertices_parsed.size() * sizeof(Point), vertices_parsed.data(), GL_STATIC_DRAW);
+	vertices.resize(vertices_parsed.size());
+
+    glGenBuffers(vertices_parsed.size(), vertices.data());
+
+	for(size_t i = 0; i < vertices_parsed.size(); i++)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
+		glBufferData(GL_ARRAY_BUFFER, vertices_parsed[i].size() * sizeof(Point), vertices_parsed[i].data(), GL_STATIC_DRAW);
+	}
 
 //  OpenGL settings
 	glEnable(GL_DEPTH_TEST);

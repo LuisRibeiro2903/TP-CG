@@ -2,7 +2,7 @@
 #include "point.hpp"
 
 
-std::vector<Point>generatePlaneXZ(float dimension,int divisions)
+std::vector<Point>generatePlanesXZ(float dimension,int divisions)
 {
     std::vector<Point>vertices;
 
@@ -18,21 +18,32 @@ std::vector<Point>generatePlaneXZ(float dimension,int divisions)
             float x1 = x0 + step;
             float z1 = z0 + step;
 
-            // Lower triangle
-            vertices.emplace_back(x0, 0.0f, z0);
-            vertices.emplace_back(x1, 0.0f, z0);
-            vertices.emplace_back(x0, 0.0f, z1);
+            // Lower triangle Top Face
+            vertices.emplace_back(x0, halfDimension, z0);
+            vertices.emplace_back(x1, halfDimension, z1);
+            vertices.emplace_back(x1, halfDimension, z0);
 
-            // Upper triangle
-            vertices.emplace_back(x1, 0.0f, z0);
-            vertices.emplace_back(x1, 0.0f, z1);
-            vertices.emplace_back(x0, 0.0f, z1);
+            // Upper triangle Top Face
+            vertices.emplace_back(x0, halfDimension, z1);
+            vertices.emplace_back(x1, halfDimension, z1);
+            vertices.emplace_back(x0, halfDimension, z0);
+
+            // Upper triangle Bottom Face
+            vertices.emplace_back(x0, -halfDimension, z0);
+            vertices.emplace_back(x1, -halfDimension, z0);
+            vertices.emplace_back(x0, -halfDimension, z1);
+
+            // Lower triangle Bottom Face
+            vertices.emplace_back(x0, -halfDimension, z1);
+            vertices.emplace_back(x1, -halfDimension, z0);
+            vertices.emplace_back(x1, -halfDimension, z1);
+
         }
     }
     return vertices;
 }
 
-std::vector<Point> generatePlaneXY(float dimension, int divisions){
+std::vector<Point> generatePlanesXY(float dimension, int divisions){
     std::vector<Point> vertices;
 
     float step = dimension / divisions;
@@ -48,21 +59,31 @@ std::vector<Point> generatePlaneXY(float dimension, int divisions){
             float y1 = y0 + step;
 
             // Lower triangle
-            vertices.emplace_back(x0, y0, 0.0f);
-            vertices.emplace_back(x1, y0, 0.0f);
-            vertices.emplace_back(x0, y1, 0.0f);
+            vertices.emplace_back(x0, y0, halfDimension);
+            vertices.emplace_back(x1, y0, halfDimension);
+            vertices.emplace_back(x0, y1, halfDimension);
 
             // Upper triangle
-            vertices.emplace_back(x1, y0, 0.0f);
-            vertices.emplace_back(x1, y1, 0.0f);
-            vertices.emplace_back(x0, y1, 0.0f);
+            vertices.emplace_back(x1, y0, halfDimension);
+            vertices.emplace_back(x1, y1, halfDimension);
+            vertices.emplace_back(x0, y1, halfDimension);
+
+            // Lower triangle
+            vertices.emplace_back(x0, y0, -halfDimension);
+            vertices.emplace_back(x1, y1, -halfDimension);
+            vertices.emplace_back(x1, y0, -halfDimension);
+
+            // Upper triangle
+            vertices.emplace_back(x1, y1, -halfDimension);
+            vertices.emplace_back(x0, y0, -halfDimension);
+            vertices.emplace_back(x0, y1, -halfDimension);
         }
     }
 
     return vertices;
 }
 
-std::vector<Point> generatePlaneYZ(float dimension, int divisions){
+std::vector<Point> generatePlanesYZ(float dimension, int divisions){
     std::vector<Point> vertices;
 
     float step = dimension / divisions;
@@ -77,15 +98,27 @@ std::vector<Point> generatePlaneYZ(float dimension, int divisions){
             float y1 = y0 + step;
             float z1 = z0 + step;
 
-            // Lower triangle
-            vertices.emplace_back(0.0f, y0, z0);
-            vertices.emplace_back(0.0f, y0, z1);
-            vertices.emplace_back(0.0f, y1, z0);
+            // Lower triangle Front Face
+            vertices.emplace_back(halfDimension, y0, z0);
+            vertices.emplace_back(halfDimension, y1, z0);
+            vertices.emplace_back(halfDimension, y1, z1);
 
-            // Upper triangle
-            vertices.emplace_back(0.0f, y0, z1);
-            vertices.emplace_back(0.0f, y1, z1);
-            vertices.emplace_back(0.0f, y1, z0);
+            // Upper triangle Front Face
+            vertices.emplace_back(halfDimension, y0, z0);
+            vertices.emplace_back(halfDimension, y1, z1);
+            vertices.emplace_back(halfDimension, y0, z1);
+
+            // Lower triangle Back Face
+            vertices.emplace_back(-halfDimension, y0, z0);
+            vertices.emplace_back(-halfDimension, y0, z1);
+            vertices.emplace_back(-halfDimension, y1, z0);
+
+            // Upper triangle Back Face
+            vertices.emplace_back(-halfDimension, y1, z1);
+            vertices.emplace_back(-halfDimension, y1, z0);
+            vertices.emplace_back(-halfDimension, y0, z1);
+
+            
         }
     }
 
@@ -96,40 +129,17 @@ std::vector<Point>generateBox(float dimension, int divisions){
     std::vector<Point>box;
 
     //Topo e base
-    auto topFace = generatePlaneXZ(dimension, divisions);
-    auto bottomFace = generatePlaneXZ(dimension, divisions);
-    for (auto &p : topFace) 
-        p.setY(p.y() + dimension / 2.0f);
+    auto XZFaces = generatePlanesXZ(dimension, divisions);
 
-    for (auto &p : bottomFace) 
-        p.setY(p.y() - dimension / 2.0f);
-
-    box.insert(box.end(), topFace.begin(), topFace.end()); 
-    box.insert(box.end(), bottomFace.begin(), bottomFace.end());
+    box.insert(box.end(), XZFaces.begin(), XZFaces.end()); 
 
     //Lados
-    auto leftFace = generatePlaneYZ(dimension, divisions);
-    auto rightFace = generatePlaneYZ(dimension, divisions);
-    for (auto &p : leftFace)
-        p.setX(p.x() - dimension / 2.0f);
-
-    for (auto &p : rightFace)
-        p.setX(p.x() + dimension / 2.0f);
-
-    box.insert(box.end(), leftFace.begin(), leftFace.end());
-    box.insert(box.end(), rightFace.begin(), rightFace.end());
+    auto YZFaces = generatePlanesYZ(dimension, divisions);
+    box.insert(box.end(), YZFaces.begin(), YZFaces.end());
 
     // Frente e trás
-    auto frontFace = generatePlaneXY(dimension, divisions);
-    auto backFace = generatePlaneXY(dimension, divisions);
-    for (auto &p : frontFace)
-        p.setZ(p.z() + dimension / 2.0f);
-
-    for (auto &p : backFace)
-        p.setZ(p.z() - dimension / 2.0f);
-
-    box.insert(box.end(), frontFace.begin(), frontFace.end());
-    box.insert(box.end(), backFace.begin(), backFace.end());
+    auto XYFaces = generatePlanesXY(dimension, divisions);
+    box.insert(box.end(), XYFaces.begin(), XYFaces.end());
 
     return box;
 }

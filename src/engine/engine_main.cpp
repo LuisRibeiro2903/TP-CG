@@ -12,8 +12,12 @@
 #include <math.h>
 
 
-
-GLuint vertices, verticeCount;
+float camX, camY, camZ;
+float eyeX, eyeY, eyeZ;
+float upX, upY, upZ;
+float fov, near, far;
+vector<GLuint> vertices;
+vector<GLuint> verticeCount;
 
 void changeSize(int w, int h) {
 
@@ -34,7 +38,7 @@ void changeSize(int w, int h) {
     glViewport(0, 0, w, h);
 
 	// Set perspective
-	gluPerspective(45.0f ,ratio, 1.0f ,1000.0f);
+	gluPerspective(fov ,ratio, near ,far);
 
 	// return to the model view matrix mode
 	glMatrixMode(GL_MODELVIEW);
@@ -48,9 +52,9 @@ void renderScene(void)
 
     //Reset transformations
     glLoadIdentity();
-    gluLookAt(3.0f, 5.0f, 4.0f,    // Position of the camera
-              0.0f, 0.0f, 0.0f,    // Point to where the camera is looking
-              0.0f, 1.0f, 0.0f);   // Vector that points upwards
+    gluLookAt(camX, camY, camZ,
+			  eyeX, eyeY, eyeZ,
+			  upX, upY, upZ);
 
     glBegin(GL_LINES);
 		// X axis in red
@@ -68,9 +72,12 @@ void renderScene(void)
 	glEnd();
 
     glColor3f(1.0f, 1.0f, 1.0f);
-    glBindBuffer(GL_ARRAY_BUFFER, vertices);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, verticeCount);
+	for(size_t i = 0; i < vertices.size(); i++)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
+		glVertexPointer(3, GL_FLOAT, 0, 0);
+		glDrawArrays(GL_TRIANGLES, 0, verticeCount[i]);
+	}
 
     glutSwapBuffers();
 }
@@ -86,16 +93,31 @@ int main (int argc, char** argv) {
     }
 
     std::string input_file_name = argv[1];
+	ParsedWorld world = worldParser(input_file_name.c_str());
+	camX = world._lookAt[0].x();
+	camY = world._lookAt[0].y();
+	camZ = world._lookAt[0].z();
+	eyeX = world._lookAt[1].x();
+	eyeY = world._lookAt[1].y();
+	eyeZ = world._lookAt[1].z();
+	upX = world._lookAt[2].x();
+	upY = world._lookAt[2].y();
+	upZ = world._lookAt[2].z();
+	fov = world._projection[0];
+	near = world._projection[1];
+	far = world._projection[2];
 
-    std::vector<Point> vertices_parsed = parse3dFile(input_file_name.c_str());
-    verticeCount = vertices_parsed.size();
+	std::vector<std::vector<Point>> vertices_parsed = parse3dFile(world._models);
+	for (int i = 0; i < vertices_parsed.size(); i++)
+	{
+		verticeCount.push_back(vertices_parsed[i].size());
+	}
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowPosition(100, 100);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(world._windowWidth, world._windowHeight);
     glutCreateWindow("CONIG-COIN");
-
     glutDisplayFunc(renderScene);
 	glutIdleFunc(renderScene);	
 	glutReshapeFunc(changeSize);
@@ -104,9 +126,16 @@ int main (int argc, char** argv) {
 	glewInit();
     #endif
 
-    glGenBuffers(1, &vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, vertices);
-    glBufferData(GL_ARRAY_BUFFER, vertices_parsed.size() * sizeof(Point), vertices_parsed.data(), GL_STATIC_DRAW);
+	
+	vertices.resize(vertices_parsed.size());
+
+    glGenBuffers(vertices_parsed.size(), vertices.data());
+
+	for(size_t i = 0; i < vertices_parsed.size(); i++)
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
+		glBufferData(GL_ARRAY_BUFFER, vertices_parsed[i].size() * sizeof(Point), vertices_parsed[i].data(), GL_STATIC_DRAW);
+	}
 
 //  OpenGL settings
 	glEnable(GL_DEPTH_TEST);

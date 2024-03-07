@@ -57,6 +57,19 @@ int main (int argc, char *argv[]) {
         std::string output_file_name = argv[4];
         write3dFile(generateBox(dimension, divisions), output_file_name);
     }
+    else if(primitive == "cone")
+    {
+        if (argc!= 6) {
+            std::cerr << "Usage: " << argv[0] << " cone <radius> <height> <slices> <stacks> <output_file_name.3d" << std::endl;
+            return 1;
+        }
+        float radius = std::stof(argv[2]);
+        float height = std::stof(argv[3]);
+        int slices = std::stoi(argv[4]);
+        int stacks = std::stoi(argv[5]);
+        std::string output_file_name = argv[6];
+        write3dFile(generateCone(radius, height, slices, stacks), output_file_name);
+    }
     else {
         std::cerr << "Unknown primitive: " << primitive << std::endl;
         return 1;

@@ -59,7 +59,7 @@ int main (int argc, char *argv[]) {
     }
     else if(primitive == "cone")
     {
-        if (argc!= 6) {
+        if (argc != 7) {
             std::cerr << "Usage: " << argv[0] << " cone <radius> <height> <slices> <stacks> <output_file_name.3d" << std::endl;
             return 1;
         }

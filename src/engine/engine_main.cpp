@@ -1,4 +1,6 @@
 #include "parser.hpp"
+#include <cmath>
+#include <cstdio>
 #include <iostream>
 
 #define DEBUG
@@ -14,8 +16,8 @@
 #include <math.h>
 
 #define ANGLE_STEP 5;
-float cam_xz_angle;
-float cam_y_angle;
+int cam_xz_angle;
+int cam_y_angle;
 #define RADIUS_STEP 0.25;
 float cam_radius;
 
@@ -84,13 +86,26 @@ void renderScene(void) {
   glutSwapBuffers();
 }
 
+void initCamera() {
+  cam_radius = 3;
+  cam_xz_angle = 0;
+  cam_y_angle = 20;
+}
+
 void updatePos() {
-  camX = cam_radius * cos(cam_xz_angle);
-  camY = cam_radius * sin(cam_y_angle);
-  camZ = cam_radius * sin(cam_xz_angle);
+  static bool first = true;
+  if (first) {
+    initCamera();
+    first = false;
+  }
+
+  camX = cam_radius * cos(cam_xz_angle * (M_PI / 180.0f));
+  camY = cam_radius * sin(cam_y_angle * (M_PI / 180.0f));
+  camZ = cam_radius * sin(cam_xz_angle * (M_PI / 180.0f));
 
 #ifdef DEBUG
-  printf("x:%f y:%f z:%f", camX, camY, camZ);
+  printf("x:%f y:%f z:%f angle_xz:%i angle_y:%i\n", camX, camY, camZ,
+         cam_xz_angle, cam_y_angle);
 #endif
 }
 
@@ -106,18 +121,24 @@ void handleKeyboard(unsigned char key, int x, int y) {
   }
   case 'a': {
     cam_xz_angle -= ANGLE_STEP;
+    if (cam_xz_angle == -360)
+      cam_xz_angle = 0;
     break;
   }
   case 'd': {
     cam_xz_angle += ANGLE_STEP;
+    if (cam_xz_angle == 360)
+      cam_xz_angle = 0;
     break;
   }
   case 'j': {
-    cam_y_angle -= ANGLE_STEP;
+    if (cam_y_angle > -90)
+      cam_y_angle -= ANGLE_STEP;
     break;
   }
   case 'k': {
-    cam_y_angle += ANGLE_STEP;
+    if (cam_y_angle < 90)
+      cam_y_angle += ANGLE_STEP;
     break;
   }
   }

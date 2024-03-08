@@ -8,28 +8,31 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
   int i;
   float step;
 
-  step = 360.0 / sides;
+  step = 2 * M_PI / sides;
 
-  float cur_x, next_x, cur_z, next_z, top_y, next_y;
+  float cur_x, next_x, cur_z, next_z, top_y, bot_y;
+  top_y = height * 0.5;
+  bot_y = -top_y;
 
   for (i = 0; i < sides; i++) {
+    cur_x = cos(i * step) * radius;
+    next_x = cos((i + 1) * step) * radius;
+    cur_z = -sin(i * step) * radius;
+    next_z = -sin((i + 1) * step) * radius;
+
     // top
-    Point p1 = Point(0, height * 0.5, 0);
-    Point p2 = Point(cos(i * step * M_PI / 180.0) * radius, height * 0.5,
-                     -sin(i * step * M_PI / 180.0) * radius);
-    Point p3 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, height * 0.5,
-                     -sin((i + 1) * step * M_PI / 180.0) * radius);
+    Point p1 = Point(0, top_y, 0);
+    Point p2 = Point(cur_x, top_y, cur_z);
+    Point p3 = Point(next_x, top_y, next_z);
 
     points.push_back(p1);
     points.push_back(p2);
     points.push_back(p3);
 
     // bottom
-    p1 = Point(0, -height * 0.5, 0);
-    p2 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, -height * 0.5,
-               -sin((i + 1) * step * M_PI / 180.0) * radius);
-    p3 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
-               -sin(i * step * M_PI / 180.0) * radius);
+    p1 = Point(0, bot_y, 0);
+    p2 = Point(cur_x, bot_y, cur_z);
+    p3 = Point(next_x, bot_y, next_z);
 
     points.push_back(p1);
     points.push_back(p2);
@@ -37,19 +40,13 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
 
     // body
 
-    p1 = Point(cos(i * step * M_PI / 180.0) * radius, height * 0.5,
-               -sin(i * step * M_PI / 180.0) * radius);
-    p2 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
-               -sin(i * step * M_PI / 180.0) * radius);
-    p3 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, height * 0.5,
-               -sin((i + 1) * step * M_PI / 180.0) * radius);
+    p1 = Point(cur_x, top_y, cur_z);
+    p2 = Point(cur_x, bot_y, cur_z);
+    p3 = Point(next_x, top_y, next_z);
 
-    Point p4 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
-                     -sin(i * step * M_PI / 180.0) * radius);
-    Point p5 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, -height * 0.5,
-                     -sin((i + 1) * step * M_PI / 180.0) * radius);
-    Point p6 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, height * 0.5,
-                     -sin((i + 1) * step * M_PI / 180.0) * radius);
+    Point p4 = Point(cur_x, bot_y, cur_z);
+    Point p5 = Point(next_x, bot_y, next_z);
+    Point p6 = Point(next_x, top_y, next_z);
 
     points.push_back(p1);
     points.push_back(p2);

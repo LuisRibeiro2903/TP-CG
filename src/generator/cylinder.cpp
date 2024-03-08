@@ -42,8 +42,8 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
 
     // bottom
     points.push_back(center_bot);
-    points.push_back(left_bot);
     points.push_back(right_bot);
+    points.push_back(left_bot);
 
     // body
     points.push_back(left_top);

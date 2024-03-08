@@ -1,5 +1,3 @@
-#include <GL/glew.h>
-#include <GL/glut.h>
 #include <cmath>
 #include <point.hpp>
 #include <vector>
@@ -11,8 +9,6 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
   float step;
 
   step = 360.0 / sides;
-
-  glBegin(GL_TRIANGLES);
 
   // top
   for (i = 0; i < sides; i++) {
@@ -64,7 +60,6 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
     points.push_back(p5);
     points.push_back(p6);
   }
-  glEnd();
 
   return points;
 }

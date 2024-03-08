@@ -83,53 +83,50 @@ void renderScene(void) {
   glutSwapBuffers();
 }
 
-
-void updatePos ()
-{
-    camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
-    camY = cam_radius * sin(cam_beta);
-    camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
-}  
+void updatePos() {
+  camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
+  camY = cam_radius * sin(cam_beta);
+  camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
+}
 
 void handleSpecialKeys(int key, int x, int y) {
-    switch (key) 
-    {
-        case GLUT_KEY_PAGE_DOWN: {
-            cam_radius -= RADIUS_STEP;
-            if (cam_radius < 2)
-                cam_radius = 2;
-            break;
-        }
-        case GLUT_KEY_PAGE_UP: {
-            cam_radius += RADIUS_STEP;
-            break;
-        }
-    }
-    updatePos();
+  switch (key) {
+  case GLUT_KEY_PAGE_DOWN: {
+    cam_radius -= RADIUS_STEP;
+    if (cam_radius < 2)
+      cam_radius = 2;
+    break;
+  }
+  case GLUT_KEY_PAGE_UP: {
+    cam_radius += RADIUS_STEP;
+    break;
+  }
+  }
+  updatePos();
 }
 
 void handleKeyboard(unsigned char key, int x, int y) {
-    switch (key) {
-        case 'w': {
-            if (cam_beta < 1.5f)
-                cam_beta += ANGLE_STEP;
-            break;
-        }
-        case 's': {
-            if (cam_beta > -1.5f)
-                cam_beta -= ANGLE_STEP;
-            break;
-        }
-        case 'a': {
-            cam_alpha += ANGLE_STEP;
-            break;
-        }
-        case 'd': {
-            cam_alpha -= ANGLE_STEP;
-            break;
-        }
-    }
-    updatePos();
+  switch (key) {
+  case 'w': {
+    if (cam_beta < 1.5f)
+      cam_beta += ANGLE_STEP;
+    break;
+  }
+  case 's': {
+    if (cam_beta > -1.5f)
+      cam_beta -= ANGLE_STEP;
+    break;
+  }
+  case 'a': {
+    cam_alpha += ANGLE_STEP;
+    break;
+  }
+  case 'd': {
+    cam_alpha -= ANGLE_STEP;
+    break;
+  }
+  }
+  updatePos();
 }
 
 int main(int argc, char **argv) {

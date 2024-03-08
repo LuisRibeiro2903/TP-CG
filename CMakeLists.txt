@@ -9,7 +9,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 file(GLOB SOURCES_SHARED "src/shared/*.cpp")
 
 set(SOURCES_ENGINE ${SOURCES_SHARED} src/engine/engine_main.cpp src/engine/parser.cpp)
-set(SOURCES_GENERATOR ${SOURCES_SHARED} src/generator/generator_main.cpp src/generator/plane.cpp src/generator/sphere.cpp src/generator/box.cpp src/generator/cone.cpp)
+set(SOURCES_GENERATOR ${SOURCES_SHARED} src/generator/generator_main.cpp src/generator/plane.cpp src/generator/sphere.cpp src/generator/box.cpp src/generator/cone.cpp src/generator/cylinder.cpp)
 
 
 add_executable(engine ${SOURCES_ENGINE})

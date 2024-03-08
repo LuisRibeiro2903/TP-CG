@@ -31,6 +31,10 @@ int main(int argc, char *argv[]) {
     }
     float length = std::stof(argv[2]);
     int divisions = std::stoi(argv[3]);
+        if (length <= 0 || divisions <= 0) {
+            std::cerr << "Length and divisions must be greater than 0" << std::endl;
+            return 1;
+        }
     std::string output_file_name = argv[4];
     write3dFile(generatePlane(length, divisions), output_file_name);
   } else if (primitive == "sphere") {
@@ -43,6 +47,10 @@ int main(int argc, char *argv[]) {
     float radius = std::stof(argv[2]);
     int slices = std::stoi(argv[3]);
     int stacks = std::stoi(argv[4]);
+        if (radius <= 0 || slices <= 0 || stacks <= 0) {
+            std::cerr << "Radius, slices and stacks must be greater than 0" << std::endl;
+            return 1;
+        }
     std::string output_file_name = argv[5];
     write3dFile(generateSphere(radius, slices, stacks), output_file_name);
   } else if (primitive == "box") {
@@ -54,6 +62,10 @@ int main(int argc, char *argv[]) {
     }
     float dimension = std::stof(argv[2]);
     int divisions = std::stoi(argv[3]);
+        if (dimension <= 0 || divisions <= 0) {
+            std::cerr << "Dimension and divisions must be greater than 0" << std::endl;
+            return 1;
+        }
     std::string output_file_name = argv[4];
     write3dFile(generateBox(dimension, divisions), output_file_name);
   } else if (primitive == "cone") {
@@ -68,6 +80,10 @@ int main(int argc, char *argv[]) {
     float height = std::stof(argv[3]);
     int slices = std::stoi(argv[4]);
     int stacks = std::stoi(argv[5]);
+        if (radius <= 0 || height <= 0 || slices <= 0 || stacks <= 0) {
+            std::cerr << "Radius, height, slices and stacks must be greater than 0" << std::endl;
+            return 1;
+        }
     std::string output_file_name = argv[6];
     write3dFile(generateCone(radius, height, slices, stacks), output_file_name);
   } else if (primitive == "cylinder") {

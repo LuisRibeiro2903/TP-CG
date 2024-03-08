@@ -1,5 +1,9 @@
-#include <iostream>
 #include "parser.hpp"
+#include <cmath>
+#include <cstdio>
+#include <iostream>
+
+#define DEBUG
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -11,6 +15,11 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
+#define ANGLE_STEP 5;
+int cam_xz_angle;
+int cam_y_angle;
+#define RADIUS_STEP 0.25;
+float cam_radius;
 
 float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
@@ -21,130 +30,179 @@ vector<GLuint> verticeCount;
 
 void changeSize(int w, int h) {
 
-	// Prevent a divide by zero, when window is too short
-	// (you cant make a window with zero width).
-	if(h == 0)
-		h = 1;
+  // Prevent a divide by zero, when window is too short
+  // (you cant make a window with zero width).
+  if (h == 0)
+    h = 1;
 
-	// compute window's aspect ratio 
-	float ratio = w * 1.0 / h;
+  // compute window's aspect ratio
+  float ratio = w * 1.0 / h;
 
-	// Set the projection matrix as current
-	glMatrixMode(GL_PROJECTION);
-	// Load Identity Matrix
-	glLoadIdentity();
-	
-	// Set the viewport to be the entire window
-    glViewport(0, 0, w, h);
+  // Set the projection matrix as current
+  glMatrixMode(GL_PROJECTION);
+  // Load Identity Matrix
+  glLoadIdentity();
 
-	// Set perspective
-	gluPerspective(fov ,ratio, near ,far);
+  // Set the viewport to be the entire window
+  glViewport(0, 0, w, h);
 
-	// return to the model view matrix mode
-	glMatrixMode(GL_MODELVIEW);
+  // Set perspective
+  gluPerspective(fov, ratio, near, far);
+
+  // return to the model view matrix mode
+  glMatrixMode(GL_MODELVIEW);
 }
 
-void renderScene(void)
-{
-    //Clear Color and Depth Buffers
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void renderScene(void) {
+  // Clear Color and Depth Buffers
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  // Reset transformations
+  glLoadIdentity();
+  gluLookAt(camX, camY, camZ, eyeX, eyeY, eyeZ, upX, upY, upZ);
 
-    //Reset transformations
-    glLoadIdentity();
-    gluLookAt(camX, camY, camZ,
-			  eyeX, eyeY, eyeZ,
-			  upX, upY, upZ);
+  glBegin(GL_LINES);
+  // X axis in red
+  glColor3f(1.0f, 0.0f, 0.0f);
+  glVertex3f(-100.0f, 0.0f, 0.0f);
+  glVertex3f(100.0f, 0.0f, 0.0f);
+  // Y Axis in Green
+  glColor3f(0.0f, 1.0f, 0.0f);
+  glVertex3f(0.0f, -100.0f, 0.0f);
+  glVertex3f(0.0f, 100.0f, 0.0f);
+  // Z Axis in Blue
+  glColor3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(0.0f, 0.0f, -100.0f);
+  glVertex3f(0.0f, 0.0f, 100.0f);
+  glEnd();
 
-    glBegin(GL_LINES);
-		// X axis in red
-		glColor3f(1.0f, 0.0f, 0.0f);
-		glVertex3f(-100.0f, 0.0f, 0.0f);
-		glVertex3f( 100.0f, 0.0f, 0.0f);
-		// Y Axis in Green
-		glColor3f(0.0f, 1.0f, 0.0f);
-		glVertex3f(0.0f, -100.0f, 0.0f);
-		glVertex3f(0.0f, 100.0f, 0.0f);
-		// Z Axis in Blue
-		glColor3f(0.0f, 0.0f, 1.0f);
-		glVertex3f(0.0f, 0.0f, -100.0f);
-		glVertex3f(0.0f, 0.0f, 100.0f);
-	glEnd();
+  glColor3f(1.0f, 1.0f, 1.0f);
+  for (size_t i = 0; i < vertices.size(); i++) {
+    glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, verticeCount[i]);
+  }
 
-    glColor3f(1.0f, 1.0f, 1.0f);
-	for(size_t i = 0; i < vertices.size(); i++)
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
-		glVertexPointer(3, GL_FLOAT, 0, 0);
-		glDrawArrays(GL_TRIANGLES, 0, verticeCount[i]);
-	}
-
-    glutSwapBuffers();
+  glutSwapBuffers();
 }
 
+void initCamera() {
+  cam_radius = 3;
+  cam_xz_angle = 0;
+  cam_y_angle = 20;
+}
 
+void updatePos() {
+  static bool first = true;
+  if (first) {
+    initCamera();
+    first = false;
+  }
 
+  camX = cam_radius * cos(cam_xz_angle * (M_PI / 180.0f));
+  camY = cam_radius * sin(cam_y_angle * (M_PI / 180.0f));
+  camZ = cam_radius * sin(cam_xz_angle * (M_PI / 180.0f));
 
-int main (int argc, char** argv) {
-    if (argc != 2)
-    {
-        std::cerr << "Usage: " << argv[0] << " <input_file_name.3d>" << std::endl;
-        return 1;
-    }
+#ifdef DEBUG
+  printf("x:%f y:%f z:%f angle_xz:%i angle_y:%i\n", camX, camY, camZ,
+         cam_xz_angle, cam_y_angle);
+#endif
+}
 
-    std::string input_file_name = argv[1];
-	ParsedWorld world = worldParser(input_file_name.c_str());
-	camX = world._lookAt[0].x();
-	camY = world._lookAt[0].y();
-	camZ = world._lookAt[0].z();
-	eyeX = world._lookAt[1].x();
-	eyeY = world._lookAt[1].y();
-	eyeZ = world._lookAt[1].z();
-	upX = world._lookAt[2].x();
-	upY = world._lookAt[2].y();
-	upZ = world._lookAt[2].z();
-	fov = world._projection[0];
-	near = world._projection[1];
-	far = world._projection[2];
+void handleKeyboard(unsigned char key, int x, int y) {
+  switch (key) {
+  case 'w': {
+    cam_radius -= RADIUS_STEP;
+    break;
+  }
+  case 's': {
+    cam_radius += RADIUS_STEP;
+    break;
+  }
+  case 'a': {
+    cam_xz_angle -= ANGLE_STEP;
+    if (cam_xz_angle == -360)
+      cam_xz_angle = 0;
+    break;
+  }
+  case 'd': {
+    cam_xz_angle += ANGLE_STEP;
+    if (cam_xz_angle == 360)
+      cam_xz_angle = 0;
+    break;
+  }
+  case 'j': {
+    if (cam_y_angle > -90)
+      cam_y_angle -= ANGLE_STEP;
+    break;
+  }
+  case 'k': {
+    if (cam_y_angle < 90)
+      cam_y_angle += ANGLE_STEP;
+    break;
+  }
+  }
+  updatePos();
+}
 
-	std::vector<std::vector<Point>> vertices_parsed = parse3dFile(world._models);
-	for (int i = 0; i < vertices_parsed.size(); i++)
-	{
-		verticeCount.push_back(vertices_parsed[i].size());
-	}
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <input_file_name.3d>" << std::endl;
+    return 1;
+  }
 
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(world._windowWidth, world._windowHeight);
-    glutCreateWindow("CONIG-COIN");
-    glutDisplayFunc(renderScene);
-	glutIdleFunc(renderScene);	
-	glutReshapeFunc(changeSize);
+  std::string input_file_name = argv[1];
+  ParsedWorld world = worldParser(input_file_name.c_str());
+  camX = world._lookAt[0].x();
+  camY = world._lookAt[0].y();
+  camZ = world._lookAt[0].z();
+  eyeX = world._lookAt[1].x();
+  eyeY = world._lookAt[1].y();
+  eyeZ = world._lookAt[1].z();
+  upX = world._lookAt[2].x();
+  upY = world._lookAt[2].y();
+  upZ = world._lookAt[2].z();
+  fov = world._projection[0];
+  near = world._projection[1];
+  far = world._projection[2];
 
-    #ifndef __APPLE__
-	glewInit();
-    #endif
+  std::vector<std::vector<Point>> vertices_parsed = parse3dFile(world._models);
+  for (int i = 0; i < vertices_parsed.size(); i++) {
+    verticeCount.push_back(vertices_parsed[i].size());
+  }
 
-	
-	vertices.resize(vertices_parsed.size());
+  glutInit(&argc, argv);
+  glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+  glutInitWindowPosition(100, 100);
+  glutInitWindowSize(world._windowWidth, world._windowHeight);
+  glutCreateWindow("CONIG-COIN");
+  glutDisplayFunc(renderScene);
+  glutIdleFunc(renderScene);
+  glutReshapeFunc(changeSize);
+  glutKeyboardFunc(handleKeyboard);
 
-    glGenBuffers(vertices_parsed.size(), vertices.data());
+#ifndef __APPLE__
+  glewInit();
+#endif
 
-	for(size_t i = 0; i < vertices_parsed.size(); i++)
-	{
-		glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
-		glBufferData(GL_ARRAY_BUFFER, vertices_parsed[i].size() * sizeof(Point), vertices_parsed[i].data(), GL_STATIC_DRAW);
-	}
+  vertices.resize(vertices_parsed.size());
 
-//  OpenGL settings
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  glGenBuffers(vertices_parsed.size(), vertices.data());
 
-// enter GLUT's main cycle
-	glutMainLoop();
-	
-	return 1;
+  for (size_t i = 0; i < vertices_parsed.size(); i++) {
+    glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
+    glBufferData(GL_ARRAY_BUFFER, vertices_parsed[i].size() * sizeof(Point),
+                 vertices_parsed[i].data(), GL_STATIC_DRAW);
+  }
+
+  //  OpenGL settings
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_CULL_FACE);
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+  // enter GLUT's main cycle
+  glutMainLoop();
+
+  return 1;
 }

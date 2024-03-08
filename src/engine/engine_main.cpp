@@ -3,8 +3,6 @@
 #include <cstdio>
 #include <iostream>
 
-#define DEBUG
-
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
@@ -15,11 +13,10 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#define ANGLE_STEP 5;
-int cam_xz_angle;
-int cam_y_angle;
+#define ANGLE_STEP 0.1;
 #define RADIUS_STEP 0.25;
-float cam_radius;
+
+float cam_alpha = 0, cam_beta = 0, cam_radius = 3;
 
 float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
@@ -86,59 +83,46 @@ void renderScene(void) {
   glutSwapBuffers();
 }
 
-void initCamera() {
-  cam_radius = 3;
-  cam_xz_angle = 0;
-  cam_y_angle = 20;
+void updatePos() {
+  camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
+  camY = cam_radius * sin(cam_beta);
+  camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
 }
 
-void updatePos() {
-  static bool first = true;
-  if (first) {
-    initCamera();
-    first = false;
+void handleSpecialKeys(int key, int x, int y) {
+  switch (key) {
+  case GLUT_KEY_PAGE_DOWN: {
+    cam_radius -= RADIUS_STEP;
+    if (cam_radius < 2)
+      cam_radius = 2;
+    break;
   }
-
-  camX = cam_radius * cos(cam_xz_angle * (M_PI / 180.0f));
-  camY = cam_radius * sin(cam_y_angle * (M_PI / 180.0f));
-  camZ = cam_radius * sin(cam_xz_angle * (M_PI / 180.0f));
-
-#ifdef DEBUG
-  printf("x:%f y:%f z:%f angle_xz:%i angle_y:%i\n", camX, camY, camZ,
-         cam_xz_angle, cam_y_angle);
-#endif
+  case GLUT_KEY_PAGE_UP: {
+    cam_radius += RADIUS_STEP;
+    break;
+  }
+  }
+  updatePos();
 }
 
 void handleKeyboard(unsigned char key, int x, int y) {
   switch (key) {
   case 'w': {
-    cam_radius -= RADIUS_STEP;
+    if (cam_beta < 1.5f)
+      cam_beta += ANGLE_STEP;
     break;
   }
   case 's': {
-    cam_radius += RADIUS_STEP;
+    if (cam_beta > -1.5f)
+      cam_beta -= ANGLE_STEP;
     break;
   }
   case 'a': {
-    cam_xz_angle -= ANGLE_STEP;
-    if (cam_xz_angle == -360)
-      cam_xz_angle = 0;
+    cam_alpha += ANGLE_STEP;
     break;
   }
   case 'd': {
-    cam_xz_angle += ANGLE_STEP;
-    if (cam_xz_angle == 360)
-      cam_xz_angle = 0;
-    break;
-  }
-  case 'j': {
-    if (cam_y_angle > -90)
-      cam_y_angle -= ANGLE_STEP;
-    break;
-  }
-  case 'k': {
-    if (cam_y_angle < 90)
-      cam_y_angle += ANGLE_STEP;
+    cam_alpha -= ANGLE_STEP;
     break;
   }
   }
@@ -180,6 +164,7 @@ int main(int argc, char **argv) {
   glutIdleFunc(renderScene);
   glutReshapeFunc(changeSize);
   glutKeyboardFunc(handleKeyboard);
+  glutSpecialFunc(handleSpecialKeys);
 
 #ifndef __APPLE__
   glewInit();

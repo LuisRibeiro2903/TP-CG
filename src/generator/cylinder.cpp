@@ -10,8 +10,10 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
 
   step = 360.0 / sides;
 
-  // top
+  float cur_x, next_x, cur_z, next_z, top_y, next_y;
+
   for (i = 0; i < sides; i++) {
+    // top
     Point p1 = Point(0, height * 0.5, 0);
     Point p2 = Point(cos(i * step * M_PI / 180.0) * radius, height * 0.5,
                      -sin(i * step * M_PI / 180.0) * radius);
@@ -21,30 +23,26 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
     points.push_back(p1);
     points.push_back(p2);
     points.push_back(p3);
-  }
 
-  // bottom
-  for (i = 0; i < sides; i++) {
-    Point p1 = Point(0, -height * 0.5, 0);
-    Point p2 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, -height * 0.5,
-                     -sin((i + 1) * step * M_PI / 180.0) * radius);
-    Point p3 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
-                     -sin(i * step * M_PI / 180.0) * radius);
+    // bottom
+    p1 = Point(0, -height * 0.5, 0);
+    p2 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, -height * 0.5,
+               -sin((i + 1) * step * M_PI / 180.0) * radius);
+    p3 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
+               -sin(i * step * M_PI / 180.0) * radius);
 
     points.push_back(p1);
     points.push_back(p2);
     points.push_back(p3);
-  }
 
-  // body
-  for (i = 0; i <= sides; i++) {
+    // body
 
-    Point p1 = Point(cos(i * step * M_PI / 180.0) * radius, height * 0.5,
-                     -sin(i * step * M_PI / 180.0) * radius);
-    Point p2 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
-                     -sin(i * step * M_PI / 180.0) * radius);
-    Point p3 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, height * 0.5,
-                     -sin((i + 1) * step * M_PI / 180.0) * radius);
+    p1 = Point(cos(i * step * M_PI / 180.0) * radius, height * 0.5,
+               -sin(i * step * M_PI / 180.0) * radius);
+    p2 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
+               -sin(i * step * M_PI / 180.0) * radius);
+    p3 = Point(cos((i + 1) * step * M_PI / 180.0) * radius, height * 0.5,
+               -sin((i + 1) * step * M_PI / 180.0) * radius);
 
     Point p4 = Point(cos(i * step * M_PI / 180.0) * radius, -height * 0.5,
                      -sin(i * step * M_PI / 180.0) * radius);
@@ -60,6 +58,5 @@ std::vector<Point> generateCylinder(float radius, float height, int sides) {
     points.push_back(p5);
     points.push_back(p6);
   }
-
   return points;
 }

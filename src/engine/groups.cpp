@@ -48,15 +48,16 @@ class GroupNode {
   }
 
   void drawModels(vector<vector<Point>> model_vertices) {
-    // stuff
-    // morestuff
+    for (vector<Point> model : model_vertices) {
+      // draw model using VBO
+    }
   }
 
 public:
   GroupNode(std::vector<GroupNode> sub_nodes, std::vector<Transform> transforms,
             std::vector<Model> models)
       : sub_nodes(std::move(sub_nodes)), transforms(std::move(transforms)),
-        std::move(models)) {}
+        models(std::move(models)) {}
 
   void drawNodes() {
     glPushMatrix();

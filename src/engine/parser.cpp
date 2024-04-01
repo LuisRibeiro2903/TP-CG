@@ -1,12 +1,14 @@
 #include "parser.hpp"
 #include "tinyxml2.h"
+#include "transforms.h"
 #include <fstream>
 #include <iostream>
 #include <string>
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
-                         int windowHeight, std::vector<std::string> &models)
+                         int windowHeight, std::vector<std::string> &models,
+                         std::vector<TransformNode> transforms)
     : _lookAt(lookAt), _projection(projection), _windowWidth(windowWidth),
       _windowHeight(windowHeight), _models(models) {}
 

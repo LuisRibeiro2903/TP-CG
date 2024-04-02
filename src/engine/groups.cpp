@@ -1,5 +1,6 @@
 #include "parser.hpp"
 #include "point.hpp"
+#include <fstream>
 #include <iostream>
 #include <model.hpp>
 #include <transform.hpp>
@@ -47,15 +48,25 @@ class GroupNode {
     return all_vertices;
   }
 
-  void drawModels(vector<vector<Point>> model_vertices) {
-    for (vector<Point> model : model_vertices) {
-      // draw model using VBO
+  void drawModels(const vector<vector<Point>> &model_vertices) {
+    for (const vector<Point> &model : model_vertices) {
+      GLuint vbo;
+      glGenBuffers(1, &vbo);
+      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+      glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(Point), model.data(),
+                   GL_STATIC_DRAW);
+
+      glVertexPointer(3, GL_FLOAT, 0, nullptr);
+      glDrawArrays(GL_TRIANGLES, 0, model.size());
+
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glDeleteBuffers(1, &vbo);
     }
   }
 
 public:
   GroupNode(std::vector<GroupNode> sub_nodes, std::vector<Transform> transforms,
-            std::vector<Model> models)
+            std::vector<string> models)
       : sub_nodes(std::move(sub_nodes)), transforms(std::move(transforms)),
         models(std::move(models)) {}
 

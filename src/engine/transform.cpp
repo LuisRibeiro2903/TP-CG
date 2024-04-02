@@ -1,3 +1,0 @@
-class Transform {
-  int temp;
-};

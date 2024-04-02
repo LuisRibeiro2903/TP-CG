@@ -8,7 +8,7 @@
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
                          int windowHeight, std::vector<std::string> &models,
-                         std::vector<TransformNode> transforms)
+                         std::vector<GroupNode> transforms)
     : _lookAt(lookAt), _projection(projection), _windowWidth(windowWidth),
       _windowHeight(windowHeight), _models(models) {}
 

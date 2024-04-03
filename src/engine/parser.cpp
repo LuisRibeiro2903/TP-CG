@@ -1,4 +1,6 @@
 #include "parser.hpp"
+#include "engine/transform/transform.hpp"
+#include "engine/transform/translate.hpp"
 #include "groups.hpp"
 #include "tinyxml2.h"
 #include <fstream>
@@ -111,6 +113,7 @@ ParsedWorld::ParsedWorld(const char *filename) {
               << std::endl;
     exit(1);
   }
+
   tinyxml2::XMLElement *groupElement = root->FirstChildElement("group");
   if (groupElement) {
     tinyxml2::XMLElement *modelsElement =
@@ -131,4 +134,17 @@ ParsedWorld::ParsedWorld(const char *filename) {
     std::cerr << "Error: invalid file format (no 'group' element)" << std::endl;
     exit(1);
   }
+
+  // TEST CODE
+  vector<GroupNode> subnodes;
+  vector<Transform *> transforms;
+  vector<string> models;
+
+  Translate t(10, 0, 0);
+  transforms.push_back(&t);
+
+  models.push_back("test_model.3d");
+
+  GroupNode n(subnodes, transforms, models);
+  groups.push_back(std::move(n));
 }

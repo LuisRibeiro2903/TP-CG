@@ -3,14 +3,12 @@
 #include "tinyxml2.h"
 #include <fstream>
 #include <iostream>
-#include <string>
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
-                         int windowHeight, std::vector<std::string> &models,
-                         std::vector<GroupNode> transforms)
+                         int windowHeight, vector<GroupNode> &groups)
     : _lookAt(lookAt), _projection(projection), _windowWidth(windowWidth),
-      _windowHeight(windowHeight), _models(models) {}
+      _windowHeight(windowHeight), groups(groups) {}
 
 vector<vector<Point>> parse3dFile(vector<string> models) {
   vector<vector<Point>> all_vertices;
@@ -40,7 +38,7 @@ ParsedWorld worldParser(const char *filename) {
   std::array<float, 3> projection;
   int windowWidth;
   int windowHeight;
-  std::vector<std::string> models;
+  vector<GroupNode> groups;
 
   tinyxml2::XMLDocument doc;
   if (doc.LoadFile(filename) != tinyxml2::XML_SUCCESS) {
@@ -128,7 +126,6 @@ ParsedWorld worldParser(const char *filename) {
                modelsElement->FirstChildElement("model");
            model != nullptr; model = model->NextSiblingElement("model")) {
         const char *file = model->Attribute("file");
-        models.push_back(file);
       }
     } else {
       std::cerr << "Error: invalid file format (no 'models' element of parent "
@@ -141,6 +138,6 @@ ParsedWorld worldParser(const char *filename) {
     exit(1);
   }
 
-  ParsedWorld world(lookAt, projection, windowWidth, windowHeight, models);
+  ParsedWorld world(lookAt, projection, windowWidth, windowHeight, groups);
   return world;
 }

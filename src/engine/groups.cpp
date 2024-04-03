@@ -1,9 +1,10 @@
 #include "groups.hpp"
+#include "engine/transform/transform.hpp"
 #include "parser.hpp"
 #include "point.hpp"
+#include <engine/transform/transform.hpp>
 #include <fstream>
 #include <iostream>
-#include <transform.hpp>
 #include <vector>
 
 #ifdef __APPLE__
@@ -18,7 +19,7 @@ using namespace std;
 vector<vector<Point>> parse3dFiles(vector<string> models) {
   vector<vector<Point>> all_vertices;
 
-  for (string model : models) {
+  for (const string model : models) {
     vector<Point> vertices;
     ifstream file(model);
 
@@ -60,7 +61,7 @@ void drawModels(const vector<vector<Point>> &model_vertices) {
 }
 
 GroupNode::GroupNode(std::vector<GroupNode> sub_nodes,
-                     std::vector<Transform> transforms,
+                     std::vector<Transform *> transforms,
                      std::vector<string> models)
     : sub_nodes(std::move(sub_nodes)), transforms(std::move(transforms)),
       models(std::move(models)) {}
@@ -68,8 +69,8 @@ GroupNode::GroupNode(std::vector<GroupNode> sub_nodes,
 void GroupNode::drawNodes() {
   glPushMatrix();
 
-  for (Transform t : transforms) {
-    t.applyTransform();
+  for (const Transform *t : transforms) {
+    t->applyTransform();
   }
 
   drawModels(parse3dFiles(models));

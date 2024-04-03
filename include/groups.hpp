@@ -1,5 +1,11 @@
+#ifndef GROUPS
+#define GROUPS
+
 #include "engine/transform/transform.hpp"
-#include "parser.hpp"
+#include "string"
+#include "vector"
+
+using namespace std;
 
 class GroupNode {
 private:
@@ -12,3 +18,5 @@ public:
             vector<string> models);
   void drawNodes();
 };
+
+#endif

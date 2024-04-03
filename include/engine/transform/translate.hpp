@@ -1,4 +1,7 @@
-#include "transform.hpp"
+#ifndef TRANSLATE
+#define TRANSLATE
+
+#include "engine/transform/transform.hpp"
 
 class Translate : public Transform {
 private:
@@ -8,3 +11,5 @@ public:
   Translate(float x, float y, float z);
   void applyTransform() const override;
 };
+
+#endif

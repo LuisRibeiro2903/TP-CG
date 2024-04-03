@@ -1,3 +1,6 @@
+#ifndef ROTATE
+#define ROTATE
+
 #include "transform.hpp"
 
 class Rotate : public Transform {
@@ -9,3 +12,4 @@ public:
   void applyTransform() const override;
 };
 
+#endif

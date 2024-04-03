@@ -5,11 +5,12 @@ PROJECT(CG_G31)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-
 file(GLOB SOURCES_SHARED "src/shared/*.cpp")
+file(GLOB SOURCES_ENGINE "src/engine/*cpp")
+file(GLOB SOURCES_GENERATOR "src/generator/*.cpp")
 
-set(SOURCES_ENGINE ${SOURCES_SHARED} src/engine/engine_main.cpp src/engine/parser.cpp)
-set(SOURCES_GENERATOR ${SOURCES_SHARED} src/generator/generator_main.cpp src/generator/plane.cpp src/generator/sphere.cpp src/generator/box.cpp src/generator/cone.cpp src/generator/cylinder.cpp)
+set(SOURCES_ENGINE ${SOURCES_SHARED} ${SOURCES_ENGINE}) 
+set(SOURCES_GENERATOR ${SOURCES_SHARED} ${SOURCES_GENERATOR})
 
 
 add_executable(engine ${SOURCES_ENGINE})

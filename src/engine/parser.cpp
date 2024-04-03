@@ -7,8 +7,8 @@
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
                          int windowHeight, vector<GroupNode> &groups)
-    : _lookAt(lookAt), _projection(projection), _windowWidth(windowWidth),
-      _windowHeight(windowHeight), groups(groups) {}
+    : lookAt(lookAt), projection(projection), windowWidth(windowWidth),
+      windowHeight(windowHeight), groups(groups) {}
 
 vector<vector<Point>> parse3dFile(vector<string> models) {
   vector<vector<Point>> all_vertices;
@@ -33,13 +33,7 @@ vector<vector<Point>> parse3dFile(vector<string> models) {
   return all_vertices;
 }
 
-ParsedWorld worldParser(const char *filename) {
-  std::array<Point, 3> lookAt;
-  std::array<float, 3> projection;
-  int windowWidth;
-  int windowHeight;
-  vector<GroupNode> groups;
-
+ParsedWorld::ParsedWorld(const char *filename) {
   tinyxml2::XMLDocument doc;
   if (doc.LoadFile(filename) != tinyxml2::XML_SUCCESS) {
     std::cerr << "Error: file not found" << std::endl;
@@ -137,7 +131,4 @@ ParsedWorld worldParser(const char *filename) {
     std::cerr << "Error: invalid file format (no 'group' element)" << std::endl;
     exit(1);
   }
-
-  ParsedWorld world(lookAt, projection, windowWidth, windowHeight, groups);
-  return world;
 }

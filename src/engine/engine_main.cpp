@@ -1,3 +1,4 @@
+#include "groups.hpp"
 #include "parser.hpp"
 #include <cmath>
 #include <iostream>
@@ -21,6 +22,8 @@ float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
 float fov, near, far;
+
+ParsedWorld *world;
 
 void changeSize(int w, int h) {
 
@@ -72,6 +75,9 @@ void renderScene(void) {
 
   glColor3f(1.0f, 1.0f, 1.0f);
   // draw the scene
+  for (GroupNode group : world->groups) {
+    group.drawNodes();
+  }
 
   glutSwapBuffers();
 }
@@ -129,25 +135,25 @@ int main(int argc, char **argv) {
   }
 
   std::string input_file_name = argv[1];
-  ParsedWorld world = worldParser(input_file_name.c_str());
+  world = new ParsedWorld(input_file_name.c_str());
 
-  camX = world._lookAt[0].x();
-  camY = world._lookAt[0].y();
-  camZ = world._lookAt[0].z();
-  eyeX = world._lookAt[1].x();
-  eyeY = world._lookAt[1].y();
-  eyeZ = world._lookAt[1].z();
-  upX = world._lookAt[2].x();
-  upY = world._lookAt[2].y();
-  upZ = world._lookAt[2].z();
-  fov = world._projection[0];
-  near = world._projection[1];
-  far = world._projection[2];
+  camX = world->lookAt[0].x();
+  camY = world->lookAt[0].y();
+  camZ = world->lookAt[0].z();
+  eyeX = world->lookAt[1].x();
+  eyeY = world->lookAt[1].y();
+  eyeZ = world->lookAt[1].z();
+  upX = world->lookAt[2].x();
+  upY = world->lookAt[2].y();
+  upZ = world->lookAt[2].z();
+  fov = world->projection[0];
+  near = world->projection[1];
+  far = world->projection[2];
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
-  glutInitWindowSize(world._windowWidth, world._windowHeight);
+  glutInitWindowSize(world->windowWidth, world->windowHeight);
   glutCreateWindow("CONIG-COIN");
   glutDisplayFunc(renderScene);
   glutIdleFunc(renderScene);

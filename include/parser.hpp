@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "groups.hpp"
 #include "point.hpp"
 
 using std::vector, std::string;
@@ -15,11 +16,10 @@ public:
   int _windowHeight;
   std::array<Point, 3> _lookAt;
   std::array<float, 3> _projection;
-  std::vector<std::string> _models;
+  vector<GroupNode> groups;
 
   ParsedWorld(std::array<Point, 3> &lookAt, std::array<float, 3> &projection,
-              int windowWidth, int windowHeight,
-              std::vector<std::string> &models);
+              int windowWidth, int windowHeight, vector<GroupNode> &groups);
 };
 
 vector<vector<Point>> parse3dFile(vector<string> models);

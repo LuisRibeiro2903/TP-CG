@@ -1,6 +1,5 @@
 #include "parser.hpp"
 #include <cmath>
-#include <cstdio>
 #include <iostream>
 
 #ifdef __APPLE__
@@ -22,8 +21,6 @@ float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
 float fov, near, far;
-vector<GLuint> vertices;
-vector<GLuint> verticeCount;
 
 void changeSize(int w, int h) {
 
@@ -74,11 +71,7 @@ void renderScene(void) {
   glEnd();
 
   glColor3f(1.0f, 1.0f, 1.0f);
-  for (size_t i = 0; i < vertices.size(); i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, verticeCount[i]);
-  }
+  // draw the scene
 
   glutSwapBuffers();
 }
@@ -137,6 +130,7 @@ int main(int argc, char **argv) {
 
   std::string input_file_name = argv[1];
   ParsedWorld world = worldParser(input_file_name.c_str());
+
   camX = world._lookAt[0].x();
   camY = world._lookAt[0].y();
   camZ = world._lookAt[0].z();
@@ -149,11 +143,6 @@ int main(int argc, char **argv) {
   fov = world._projection[0];
   near = world._projection[1];
   far = world._projection[2];
-
-  std::vector<std::vector<Point>> vertices_parsed = parse3dFile(world._models);
-  for (int i = 0; i < vertices_parsed.size(); i++) {
-    verticeCount.push_back(vertices_parsed[i].size());
-  }
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -169,16 +158,6 @@ int main(int argc, char **argv) {
 #ifndef __APPLE__
   glewInit();
 #endif
-
-  vertices.resize(vertices_parsed.size());
-
-  glGenBuffers(vertices_parsed.size(), vertices.data());
-
-  for (size_t i = 0; i < vertices_parsed.size(); i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
-    glBufferData(GL_ARRAY_BUFFER, vertices_parsed[i].size() * sizeof(Point),
-                 vertices_parsed[i].data(), GL_STATIC_DRAW);
-  }
 
   //  OpenGL settings
   glEnable(GL_DEPTH_TEST);

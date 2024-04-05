@@ -16,16 +16,16 @@ public:
   int windowHeight;
   std::array<Point, 3> lookAt;
   std::array<float, 3> projection;
-  vector<GroupNode *> groups;
+  GroupNode * rootGroup;
 
   ParsedWorld(std::array<Point, 3> &lookAt, std::array<float, 3> &projection,
-              int windowWidth, int windowHeight, vector<GroupNode *> &groups);
+              int windowWidth, int windowHeight, GroupNode * rootGroup);
 
   ParsedWorld(const char *filename);
 };
 
 vector<vector<Point>> parse3dFile(vector<string> models);
 
-ParsedWorld worldParser(const char *filename);
+ParsedWorld * worldParser(const char *filename);
 
 #endif

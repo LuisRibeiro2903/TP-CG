@@ -11,6 +11,7 @@ file(GLOB SOURCES_SHARED "src/shared/*.cpp")
 file(GLOB SOURCES_ENGINE "src/engine/*.cpp" "src/engine/transform/*.cpp")
 file(GLOB SOURCES_GENERATOR "src/generator/*.cpp")
 
+set(CMAKE_BUILD_TYPE Debug)
 set(SOURCES_ENGINE ${SOURCES_SHARED} ${SOURCES_ENGINE}) 
 set(SOURCES_GENERATOR ${SOURCES_SHARED} ${SOURCES_GENERATOR})
 

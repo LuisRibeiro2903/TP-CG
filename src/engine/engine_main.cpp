@@ -75,9 +75,7 @@ void renderScene(void) {
 
   glColor3f(1.0f, 1.0f, 1.0f);
   // draw the scene
-  for (GroupNode *group : world->groups) {
-    group->drawNodes();
-  }
+  world->rootGroup->draw();
 
   glutSwapBuffers();
 }
@@ -135,7 +133,7 @@ int main(int argc, char **argv) {
   }
 
   std::string input_file_name = argv[1];
-  world = new ParsedWorld(input_file_name.c_str());
+  world = worldParser(input_file_name.c_str());
 
   camX = world->lookAt[0].x();
   camY = world->lookAt[0].y();

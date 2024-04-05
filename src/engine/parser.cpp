@@ -143,7 +143,7 @@ ParsedWorld::ParsedWorld(const char *filename) {
   Translate t(10, 0, 0);
   transforms.push_back(&t);
 
-  models.push_back("test_model.3d");
+  models.push_back("cylinder.3d");
 
   GroupNode n(subnodes, transforms, models);
   groups.push_back(std::move(n));

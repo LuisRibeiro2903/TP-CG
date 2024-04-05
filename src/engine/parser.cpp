@@ -139,14 +139,15 @@ ParsedWorld::ParsedWorld(const char *filename)
   // TEST CODE
   vector<GroupNode *> subnodes;
   vector<Transform *> transforms;
-  vector<string> models;
+  vector<string *> models;
 
   transforms.push_back(new Translate(10, 0, 0));
 
-  models.push_back("cylinder.3d");
+  string *s = new string("cylinder.3d");
+  models.push_back(s);
 
   GroupNode *g = new GroupNode(subnodes, transforms, models);
   groups.push_back(g);
 
-  string s;
+  string tmp;
 }

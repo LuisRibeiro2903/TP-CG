@@ -15,12 +15,12 @@
 
 using namespace std;
 
-vector<vector<Point>> parse3dFiles(vector<string> models) {
+vector<vector<Point>> parse3dFiles(vector<string *> models) {
   vector<vector<Point>> all_vertices;
 
-  for (const string model : models) {
+  for (const string *model : models) {
     vector<Point> vertices;
-    ifstream file(model);
+    ifstream file(*model);
 
     if (!file.is_open()) {
       cerr << "Error: file not found" << endl;
@@ -59,8 +59,9 @@ void drawModels(const vector<vector<Point>> &model_vertices) {
   }
 }
 
-GroupNode::GroupNode(vector<GroupNode *> _sub_nodes,
-                     vector<Transform *> _transforms, vector<string> _models)
+GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
+                     vector<Transform *> &_transforms,
+                     vector<string *> &_models)
     : sub_nodes(_sub_nodes), transforms(_transforms), models(_models) {}
 
 void GroupNode::drawNodes() {

@@ -16,7 +16,12 @@ private:
 public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
             vector<string *> &_models);
-  void drawNodes();
+  GroupNode();
+  void draw();
+
+  void addTransform(Transform *transform);
+  void addModel(string *model);
+  void addSubNode(GroupNode *node);
 };
 
 #endif

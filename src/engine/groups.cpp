@@ -59,19 +59,33 @@ void drawModels(const vector<vector<Point>> &model_vertices) {
   }
 }
 
+void GroupNode::addTransform(Transform *transform) {
+  transforms.push_back(transform);
+}
+
+void GroupNode::addModel(string *model) { models.push_back(model); }
+
+void GroupNode::addSubNode(GroupNode *node) { sub_nodes.push_back(node); }
+
 GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
                      vector<Transform *> &_transforms,
                      vector<string *> &_models)
     : sub_nodes(_sub_nodes), transforms(_transforms), models(_models) {}
 
-void GroupNode::drawNodes() {
+
+GroupNode::GroupNode() {}
+
+void GroupNode::draw() {
   glPushMatrix();
 
   for (const Transform *t : transforms) {
     t->applyTransform();
   }
-
   drawModels(parse3dFiles(models));
+
+  for (GroupNode * node : sub_nodes) {
+    node->draw();
+  }
 
   glPopMatrix();
 }

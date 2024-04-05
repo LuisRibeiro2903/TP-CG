@@ -1,6 +1,7 @@
 #include "parser.hpp"
-#include "engine/transform/transform.hpp"
 #include "engine/transform/translate.hpp"
+#include "engine/transform/rotate.hpp"
+#include "engine/transform/scale.hpp"
 #include "groups.hpp"
 #include "tinyxml2.h"
 #include <fstream>
@@ -8,9 +9,9 @@
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
-                         int windowHeight, vector<GroupNode *> &groups)
+                         int windowHeight, GroupNode * rootGroup)
     : lookAt(lookAt), projection(projection), windowWidth(windowWidth),
-      windowHeight(windowHeight), groups(groups) {}
+      windowHeight(windowHeight), rootGroup(rootGroup) {}
 
 vector<vector<Point>> parse3dFile(vector<string> models) {
   vector<vector<Point>> all_vertices;
@@ -35,8 +36,15 @@ vector<vector<Point>> parse3dFile(vector<string> models) {
   return all_vertices;
 }
 
-ParsedWorld::ParsedWorld(const char *filename)
-    : lookAt(), projection(), groups() {
+GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement);
+
+ParsedWorld * worldParser(const char *filename) {
+
+  std::array<Point, 3> lookAt;
+  std::array<float, 3> projection;
+  int windowWidth;
+  int windowHeight;
+
   tinyxml2::XMLDocument doc;
   if (doc.LoadFile(filename) != tinyxml2::XML_SUCCESS) {
     std::cerr << "Error: file not found" << std::endl;
@@ -115,39 +123,59 @@ ParsedWorld::ParsedWorld(const char *filename)
     exit(1);
   }
 
-  tinyxml2::XMLElement *groupElement = root->FirstChildElement("group");
-  if (groupElement) {
-    tinyxml2::XMLElement *modelsElement =
-        groupElement->FirstChildElement("models");
-    if (modelsElement) {
-      for (tinyxml2::XMLElement *model =
-               modelsElement->FirstChildElement("model");
-           model != nullptr; model = model->NextSiblingElement("model")) {
-        const char *file = model->Attribute("file");
-      }
-    } else {
-      std::cerr << "Error: invalid file format (no 'models' element of parent "
-                   "'group')"
-                << std::endl;
-      exit(1);
-    }
+  
+  GroupNode *rootGroup = nullptr;
+  tinyxml2::XMLElement *primaryGroupElement = root->FirstChildElement("group");
+  if (primaryGroupElement) {
+    rootGroup = ParseGroupElement(primaryGroupElement);
   } else {
-    std::cerr << "Error: invalid file format (no 'group' element)" << std::endl;
+    std::cerr << "Error: invalid file format (no 'group' element, must have at least one)" << std::endl;
     exit(1);
   }
 
-  // TEST CODE
-  vector<GroupNode *> subnodes;
-  vector<Transform *> transforms;
-  vector<string *> models;
+  return new ParsedWorld(lookAt, projection, windowWidth, windowHeight, rootGroup);
+  
 
-  transforms.push_back(new Translate(10, 0, 0));
+}
 
-  string *s = new string("cylinder.3d");
-  models.push_back(s);
+GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
+  auto * group = new GroupNode();
+  
+  tinyxml2::XMLElement* modelsElement = groupElement->FirstChildElement("models");
+  if (modelsElement) {
+    for (tinyxml2::XMLElement* model = modelsElement->FirstChildElement("model"); model != nullptr; model = model->NextSiblingElement("model")) {
+      const char *file = model->Attribute("file");
+      group->addModel(new string(file));
+    }
+  }
 
-  GroupNode *g = new GroupNode(subnodes, transforms, models);
-  groups.push_back(g);
+  tinyxml2::XMLElement* transformElement = groupElement->FirstChildElement("transform");
+  if (transformElement) {
+    for (tinyxml2::XMLElement* child = transformElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
+        string transformType = child->Value();
+        float x = 0, y = 0, z = 0, angle = 0;
+        
+        child->QueryFloatAttribute("x", &x);
+        child->QueryFloatAttribute("y", &y);
+        child->QueryFloatAttribute("z", &z);
 
-  string tmp;
+        if (transformType == "translate") {
+            group->addTransform(new Translate(x, y, z));
+        } else if (transformType == "rotate") {
+            child->QueryFloatAttribute("angle", &angle);
+            group->addTransform(new Rotate(angle, x, y, z));
+        } else if (transformType == "scale") {
+            group->addTransform(new Scale(x, y, z));
+        }
+    }
+}
+
+  tinyxml2::XMLElement* childGroup = groupElement->FirstChildElement("group");
+  while(childGroup) {
+    GroupNode * child = ParseGroupElement(childGroup);
+    group->addSubNode(child);
+    childGroup = childGroup->NextSiblingElement("group");
+  }
+
+  return group;
 }

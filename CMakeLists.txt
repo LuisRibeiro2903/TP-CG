@@ -6,7 +6,7 @@ PROJECT(CG_G31)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 file(GLOB SOURCES_SHARED "src/shared/*.cpp")
-file(GLOB SOURCES_ENGINE "src/engine/*cpp")
+file(GLOB SOURCES_ENGINE "src/engine/*cpp" "src/engine/transform/*.cpp")
 file(GLOB SOURCES_GENERATOR "src/generator/*.cpp")
 
 set(SOURCES_ENGINE ${SOURCES_SHARED} ${SOURCES_ENGINE}) 

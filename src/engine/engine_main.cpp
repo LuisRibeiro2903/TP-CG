@@ -15,7 +15,7 @@
 #define ANGLE_STEP 0.1;
 #define RADIUS_STEP 0.25;
 
-float cam_alpha = 0, cam_beta = 0, cam_radius = 3;
+float cam_alpha, cam_beta, cam_radius;
 
 float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
@@ -98,6 +98,7 @@ void updatePos() {
   camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
   camY = cam_radius * sin(cam_beta);
   camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
+
 }
 
 void handleSpecialKeys(int key, int x, int y) {
@@ -121,19 +122,23 @@ void handleKeyboard(unsigned char key, int x, int y) {
     case 'w': {
       if (cam_beta < 1.5f)
         cam_beta += ANGLE_STEP;
+    
       break;
     }
     case 's': {
       if (cam_beta > -1.5f)
         cam_beta -= ANGLE_STEP;
+    
       break;
     }
     case 'a': {
-      cam_alpha += ANGLE_STEP;
+      cam_alpha -= ANGLE_STEP;
+  
       break;
     }
     case 'd': {
-      cam_alpha -= ANGLE_STEP;
+      cam_alpha += ANGLE_STEP;
+  
       break;
     }
     case 'p': {
@@ -160,6 +165,7 @@ int main(int argc, char **argv) {
   camX = world->lookAt[0].x();
   camY = world->lookAt[0].y();
   camZ = world->lookAt[0].z();
+
   eyeX = world->lookAt[1].x();
   eyeY = world->lookAt[1].y();
   eyeZ = world->lookAt[1].z();
@@ -170,9 +176,9 @@ int main(int argc, char **argv) {
   near = world->projection[1];
   far = world->projection[2];
 
-  /* cam_radius = sqrt(pow(camX, 2) + pow(camY, 2) + pow(camZ, 2));
-  cam_alpha = 1.24905;
-  cam_beta = 2.13474 */;
+  cam_radius = sqrt(camX * camX + camY * camY + camZ * camZ);
+  cam_alpha = atan2f(camX, camZ);
+  cam_beta = asinf(camY / cam_radius);
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

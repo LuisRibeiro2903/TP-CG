@@ -67,13 +67,20 @@ void GroupNode::addModel(string *model) { models.push_back(model); }
 
 void GroupNode::addSubNode(GroupNode *node) { sub_nodes.push_back(node); }
 
+void GroupNode::setColor(float r, float g, float b) {
+  color[0] = r;
+  color[1] = g;
+  color[2] = b;
+}
+
 GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
                      vector<Transform *> &_transforms,
-                     vector<string *> &_models)
-    : sub_nodes(_sub_nodes), transforms(_transforms), models(_models) {}
+                     vector<string *> &_models,
+                     array<float, 3> &_color)
+    : sub_nodes(_sub_nodes), transforms(_transforms), models(_models), color(_color){}
 
 
-GroupNode::GroupNode() {}
+GroupNode::GroupNode() : color{{1.0f, 1.0f, 1.0f}} {}
 
 void GroupNode::draw() {
   glPushMatrix();
@@ -81,6 +88,9 @@ void GroupNode::draw() {
   for (const Transform *t : transforms) {
     t->applyTransform();
   }
+
+  glColor3f(color[0], color[1], color[2]);
+
   drawModels(parse3dFiles(models));
 
   for (GroupNode * node : sub_nodes) {

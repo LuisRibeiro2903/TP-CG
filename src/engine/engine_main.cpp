@@ -11,7 +11,6 @@
 #endif
 
 #define _USE_MATH_DEFINES
-#include <math.h>
 
 #define ANGLE_STEP 0.1;
 #define RADIUS_STEP 0.25;
@@ -22,6 +21,9 @@ float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
 float fov, near, far;
+
+bool wireframe = true;
+bool axis = true;
 
 ParsedWorld *world;
 
@@ -58,22 +60,34 @@ void renderScene(void) {
   glLoadIdentity();
   gluLookAt(camX, camY, camZ, eyeX, eyeY, eyeZ, upX, upY, upZ);
 
-  glBegin(GL_LINES);
-  // X axis in red
-  glColor3f(1.0f, 0.0f, 0.0f);
-  glVertex3f(-100.0f, 0.0f, 0.0f);
-  glVertex3f(100.0f, 0.0f, 0.0f);
-  // Y Axis in Green
-  glColor3f(0.0f, 1.0f, 0.0f);
-  glVertex3f(0.0f, -100.0f, 0.0f);
-  glVertex3f(0.0f, 100.0f, 0.0f);
-  // Z Axis in Blue
-  glColor3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(0.0f, 0.0f, -100.0f);
-  glVertex3f(0.0f, 0.0f, 100.0f);
-  glEnd();
+  if (wireframe)
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  else
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+
+  if (axis)
+  {
+    // Draw axis
+    glBegin(GL_LINES);
+    // X axis in red
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(-100.0f, 0.0f, 0.0f);
+    glVertex3f(100.0f, 0.0f, 0.0f);
+    // Y Axis in Green
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, -100.0f, 0.0f);
+    glVertex3f(0.0f, 100.0f, 0.0f);
+    // Z Axis in Blue
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, -100.0f);
+    glVertex3f(0.0f, 0.0f, 100.0f);
+    glEnd();
+  }
+
+  // Set the color to white by default
   glColor3f(1.0f, 1.0f, 1.0f);
+
   // draw the scene
   world->rootGroup->draw();
 
@@ -104,24 +118,32 @@ void handleSpecialKeys(int key, int x, int y) {
 
 void handleKeyboard(unsigned char key, int x, int y) {
   switch (key) {
-  case 'w': {
-    if (cam_beta < 1.5f)
-      cam_beta += ANGLE_STEP;
-    break;
-  }
-  case 's': {
-    if (cam_beta > -1.5f)
-      cam_beta -= ANGLE_STEP;
-    break;
-  }
-  case 'a': {
-    cam_alpha += ANGLE_STEP;
-    break;
-  }
-  case 'd': {
-    cam_alpha -= ANGLE_STEP;
-    break;
-  }
+    case 'w': {
+      if (cam_beta < 1.5f)
+        cam_beta += ANGLE_STEP;
+      break;
+    }
+    case 's': {
+      if (cam_beta > -1.5f)
+        cam_beta -= ANGLE_STEP;
+      break;
+    }
+    case 'a': {
+      cam_alpha += ANGLE_STEP;
+      break;
+    }
+    case 'd': {
+      cam_alpha -= ANGLE_STEP;
+      break;
+    }
+    case 'p': {
+      wireframe = !wireframe;
+      break;
+    }
+    case 'l': {
+      axis = !axis;
+      break;
+    }
   }
   updatePos();
 }
@@ -148,6 +170,10 @@ int main(int argc, char **argv) {
   near = world->projection[1];
   far = world->projection[2];
 
+  /* cam_radius = sqrt(pow(camX, 2) + pow(camY, 2) + pow(camZ, 2));
+  cam_alpha = 1.24905;
+  cam_beta = 2.13474 */;
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
@@ -167,7 +193,6 @@ int main(int argc, char **argv) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnableClientState(GL_VERTEX_ARRAY);
-  glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   // enter GLUT's main cycle
   glutMainLoop();

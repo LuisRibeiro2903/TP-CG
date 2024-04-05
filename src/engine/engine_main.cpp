@@ -75,8 +75,8 @@ void renderScene(void) {
 
   glColor3f(1.0f, 1.0f, 1.0f);
   // draw the scene
-  for (GroupNode group : world->groups) {
-    group.drawNodes();
+  for (GroupNode *group : world->groups) {
+    group->drawNodes();
   }
 
   glutSwapBuffers();

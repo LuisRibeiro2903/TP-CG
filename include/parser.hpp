@@ -16,10 +16,11 @@ public:
   int windowHeight;
   std::array<Point, 3> lookAt;
   std::array<float, 3> projection;
-  vector<GroupNode> groups;
+  vector<GroupNode *> groups;
 
   ParsedWorld(std::array<Point, 3> &lookAt, std::array<float, 3> &projection,
-              int windowWidth, int windowHeight, vector<GroupNode> &groups);
+              int windowWidth, int windowHeight, vector<GroupNode *> &groups);
+
   ParsedWorld(const char *filename);
 };
 

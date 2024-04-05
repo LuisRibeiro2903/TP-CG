@@ -8,7 +8,7 @@
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
-                         int windowHeight, vector<GroupNode> &groups)
+                         int windowHeight, vector<GroupNode *> &groups)
     : lookAt(lookAt), projection(projection), windowWidth(windowWidth),
       windowHeight(windowHeight), groups(groups) {}
 
@@ -35,7 +35,8 @@ vector<vector<Point>> parse3dFile(vector<string> models) {
   return all_vertices;
 }
 
-ParsedWorld::ParsedWorld(const char *filename) {
+ParsedWorld::ParsedWorld(const char *filename)
+    : lookAt(), projection(), groups() {
   tinyxml2::XMLDocument doc;
   if (doc.LoadFile(filename) != tinyxml2::XML_SUCCESS) {
     std::cerr << "Error: file not found" << std::endl;
@@ -136,15 +137,16 @@ ParsedWorld::ParsedWorld(const char *filename) {
   }
 
   // TEST CODE
-  vector<GroupNode> subnodes;
+  vector<GroupNode *> subnodes;
   vector<Transform *> transforms;
   vector<string> models;
 
-  Translate t(10, 0, 0);
-  transforms.push_back(&t);
+  transforms.push_back(new Translate(10, 0, 0));
 
   models.push_back("cylinder.3d");
 
-  GroupNode n(subnodes, transforms, models);
-  groups.push_back(std::move(n));
+  GroupNode *g = new GroupNode(subnodes, transforms, models);
+  groups.push_back(g);
+
+  string s;
 }

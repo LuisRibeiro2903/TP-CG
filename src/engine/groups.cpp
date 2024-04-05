@@ -5,7 +5,6 @@
 #include <engine/transform/transform.hpp>
 #include <fstream>
 #include <iostream>
-#include <vector>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -60,11 +59,9 @@ void drawModels(const vector<vector<Point>> &model_vertices) {
   }
 }
 
-GroupNode::GroupNode(std::vector<GroupNode> sub_nodes,
-                     std::vector<Transform *> transforms,
-                     std::vector<string> models)
-    : sub_nodes(std::move(sub_nodes)), transforms(std::move(transforms)),
-      models(std::move(models)) {}
+GroupNode::GroupNode(vector<GroupNode *> _sub_nodes,
+                     vector<Transform *> _transforms, vector<string> _models)
+    : sub_nodes(_sub_nodes), transforms(_transforms), models(_models) {}
 
 void GroupNode::drawNodes() {
   glPushMatrix();

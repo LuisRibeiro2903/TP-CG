@@ -130,7 +130,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <input_file_name.3d>" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <input_file.xml>" << std::endl;
     return 1;
   }
 

@@ -1,6 +1,6 @@
+#include "groups.hpp"
 #include "parser.hpp"
 #include <cmath>
-#include <cstdio>
 #include <iostream>
 
 #ifdef __APPLE__
@@ -22,8 +22,8 @@ float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
 float fov, near, far;
-vector<GLuint> vertices;
-vector<GLuint> verticeCount;
+
+ParsedWorld *world;
 
 void changeSize(int w, int h) {
 
@@ -74,10 +74,9 @@ void renderScene(void) {
   glEnd();
 
   glColor3f(1.0f, 1.0f, 1.0f);
-  for (size_t i = 0; i < vertices.size(); i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, verticeCount[i]);
+  // draw the scene
+  for (GroupNode *group : world->groups) {
+    group->drawNodes();
   }
 
   glutSwapBuffers();
@@ -131,34 +130,30 @@ void handleKeyboard(unsigned char key, int x, int y) {
 
 int main(int argc, char **argv) {
   if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <input_file_name.3d>" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " <input_file.xml>" << std::endl;
     return 1;
   }
 
   std::string input_file_name = argv[1];
-  ParsedWorld world = worldParser(input_file_name.c_str());
-  camX = world._lookAt[0].x();
-  camY = world._lookAt[0].y();
-  camZ = world._lookAt[0].z();
-  eyeX = world._lookAt[1].x();
-  eyeY = world._lookAt[1].y();
-  eyeZ = world._lookAt[1].z();
-  upX = world._lookAt[2].x();
-  upY = world._lookAt[2].y();
-  upZ = world._lookAt[2].z();
-  fov = world._projection[0];
-  near = world._projection[1];
-  far = world._projection[2];
+  world = new ParsedWorld(input_file_name.c_str());
 
-  std::vector<std::vector<Point>> vertices_parsed = parse3dFile(world._models);
-  for (int i = 0; i < vertices_parsed.size(); i++) {
-    verticeCount.push_back(vertices_parsed[i].size());
-  }
+  camX = world->lookAt[0].x();
+  camY = world->lookAt[0].y();
+  camZ = world->lookAt[0].z();
+  eyeX = world->lookAt[1].x();
+  eyeY = world->lookAt[1].y();
+  eyeZ = world->lookAt[1].z();
+  upX = world->lookAt[2].x();
+  upY = world->lookAt[2].y();
+  upZ = world->lookAt[2].z();
+  fov = world->projection[0];
+  near = world->projection[1];
+  far = world->projection[2];
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
-  glutInitWindowSize(world._windowWidth, world._windowHeight);
+  glutInitWindowSize(world->windowWidth, world->windowHeight);
   glutCreateWindow("CONIG-COIN");
   glutDisplayFunc(renderScene);
   glutIdleFunc(renderScene);
@@ -169,16 +164,6 @@ int main(int argc, char **argv) {
 #ifndef __APPLE__
   glewInit();
 #endif
-
-  vertices.resize(vertices_parsed.size());
-
-  glGenBuffers(vertices_parsed.size(), vertices.data());
-
-  for (size_t i = 0; i < vertices_parsed.size(); i++) {
-    glBindBuffer(GL_ARRAY_BUFFER, vertices[i]);
-    glBufferData(GL_ARRAY_BUFFER, vertices_parsed[i].size() * sizeof(Point),
-                 vertices_parsed[i].data(), GL_STATIC_DRAW);
-  }
 
   //  OpenGL settings
   glEnable(GL_DEPTH_TEST);

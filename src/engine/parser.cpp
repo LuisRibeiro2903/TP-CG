@@ -1,14 +1,16 @@
 #include "parser.hpp"
+#include "engine/transform/transform.hpp"
+#include "engine/transform/translate.hpp"
+#include "groups.hpp"
 #include "tinyxml2.h"
 #include <fstream>
 #include <iostream>
-#include <string>
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
-                         int windowHeight, std::vector<std::string> &models)
-    : _lookAt(lookAt), _projection(projection), _windowWidth(windowWidth),
-      _windowHeight(windowHeight), _models(models) {}
+                         int windowHeight, vector<GroupNode *> &groups)
+    : lookAt(lookAt), projection(projection), windowWidth(windowWidth),
+      windowHeight(windowHeight), groups(groups) {}
 
 vector<vector<Point>> parse3dFile(vector<string> models) {
   vector<vector<Point>> all_vertices;
@@ -33,13 +35,8 @@ vector<vector<Point>> parse3dFile(vector<string> models) {
   return all_vertices;
 }
 
-ParsedWorld worldParser(const char *filename) {
-  std::array<Point, 3> lookAt;
-  std::array<float, 3> projection;
-  int windowWidth;
-  int windowHeight;
-  std::vector<std::string> models;
-
+ParsedWorld::ParsedWorld(const char *filename)
+    : lookAt(), projection(), groups() {
   tinyxml2::XMLDocument doc;
   if (doc.LoadFile(filename) != tinyxml2::XML_SUCCESS) {
     std::cerr << "Error: file not found" << std::endl;
@@ -117,6 +114,7 @@ ParsedWorld worldParser(const char *filename) {
               << std::endl;
     exit(1);
   }
+
   tinyxml2::XMLElement *groupElement = root->FirstChildElement("group");
   if (groupElement) {
     tinyxml2::XMLElement *modelsElement =
@@ -126,7 +124,6 @@ ParsedWorld worldParser(const char *filename) {
                modelsElement->FirstChildElement("model");
            model != nullptr; model = model->NextSiblingElement("model")) {
         const char *file = model->Attribute("file");
-        models.push_back(file);
       }
     } else {
       std::cerr << "Error: invalid file format (no 'models' element of parent "
@@ -139,6 +136,18 @@ ParsedWorld worldParser(const char *filename) {
     exit(1);
   }
 
-  ParsedWorld world(lookAt, projection, windowWidth, windowHeight, models);
-  return world;
+  // TEST CODE
+  vector<GroupNode *> subnodes;
+  vector<Transform *> transforms;
+  vector<string *> models;
+
+  transforms.push_back(new Translate(10, 0, 0));
+
+  string *s = new string("cylinder.3d");
+  models.push_back(s);
+
+  GroupNode *g = new GroupNode(subnodes, transforms, models);
+  groups.push_back(g);
+
+  string tmp;
 }

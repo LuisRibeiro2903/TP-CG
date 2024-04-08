@@ -141,13 +141,6 @@ ParsedWorld * worldParser(const char *filename) {
 GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
   auto * group = new GroupNode();
   
-  tinyxml2::XMLElement* modelsElement = groupElement->FirstChildElement("models");
-  if (modelsElement) {
-    for (tinyxml2::XMLElement* model = modelsElement->FirstChildElement("model"); model != nullptr; model = model->NextSiblingElement("model")) {
-      const char *file = model->Attribute("file");
-      group->addModel(new string(file));
-    }
-  }
 
   tinyxml2::XMLElement* transformElement = groupElement->FirstChildElement("transform");
   if (transformElement) {
@@ -168,7 +161,24 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
             group->addTransform(new Scale(x, y, z));
         }
     }
-}
+  }
+
+  tinyxml2::XMLElement* colorElement = groupElement->FirstChildElement("color");
+  if (colorElement) {
+    float r = 0, g = 0, b = 0;
+    colorElement->QueryFloatAttribute("r", &r);
+    colorElement->QueryFloatAttribute("g", &g);
+    colorElement->QueryFloatAttribute("b", &b);
+    group->setColor(r, g, b);
+  }
+
+  tinyxml2::XMLElement* modelsElement = groupElement->FirstChildElement("models");
+  if (modelsElement) {
+    for (tinyxml2::XMLElement* model = modelsElement->FirstChildElement("model"); model != nullptr; model = model->NextSiblingElement("model")) {
+      const char *file = model->Attribute("file");
+      group->addModel(new string(file));
+    }
+  }
 
   tinyxml2::XMLElement* childGroup = groupElement->FirstChildElement("group");
   while(childGroup) {

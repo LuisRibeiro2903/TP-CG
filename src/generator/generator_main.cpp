@@ -1,5 +1,6 @@
 #include "generators.hpp"
 #include <fstream>
+#include <string>
 #include <iostream>
 #include <vector>
 
@@ -98,6 +99,18 @@ int main(int argc, char *argv[]) {
     int sides = std::stoi(argv[4]);
     std::string output_file_name = argv[5];
     write3dFile(generateCylinder(radius, height, sides), output_file_name);
+  } else if (primitive == "patch") {
+    if (argc != 5) {
+      std::cerr << "Usage: " << argv[0]
+                << " patch <patch_file> <tesselation_level> <output_file_name.3d"
+                << std::endl;
+      return 1;
+    }
+    std::string patch_file = argv[2];
+    float tesselation_level = std::stof(argv[3]);
+    std::string output_file_name = argv[4];
+    write3dFile(generatePatch(patch_file, tesselation_level), output_file_name);
+
   } else {
     std::cerr << "Unknown primitive: " << primitive << std::endl;
     return 1;

@@ -2,6 +2,7 @@
 #include "engine/transform/translate.hpp"
 #include "engine/transform/rotate.hpp"
 #include "engine/transform/scale.hpp"
+#include "engine/transform/catmullrom.hpp"
 #include "groups.hpp"
 #include "tinyxml2.h"
 #include <fstream>
@@ -146,19 +147,47 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
   if (transformElement) {
     for (tinyxml2::XMLElement* child = transformElement->FirstChildElement(); child != nullptr; child = child->NextSiblingElement()) {
         string transformType = child->Value();
-        float x = 0, y = 0, z = 0, angle = 0;
-        
-        child->QueryFloatAttribute("x", &x);
-        child->QueryFloatAttribute("y", &y);
-        child->QueryFloatAttribute("z", &z);
+        float time = 0.0f;
 
-        if (transformType == "translate") {
-            group->addTransform(new Translate(x, y, z));
-        } else if (transformType == "rotate") {
-            child->QueryFloatAttribute("angle", &angle);
-            group->addTransform(new Rotate(angle, x, y, z));
-        } else if (transformType == "scale") {
-            group->addTransform(new Scale(x, y, z));
+        // Checking if the translate is a CatmullRom
+        if (transformType == "translate" && child->QueryFloatAttribute("time", &time) == tinyxml2::XML_SUCCESS) {
+          // Align bool
+          const char* alignStr = child->Attribute("align");
+          bool align = alignStr && strcmp(alignStr, "true") == 0;
+
+          //Vector of points
+          std::vector<Point> points;
+          for(tinyxml2::XMLElement* pointElement = child->FirstChildElement("point"); pointElement != nullptr;  pointElement = pointElement->NextSiblingElement("point")) {
+            float x = 0, y = 0, z = 0;
+            pointElement->QueryFloatAttribute("x", &x);
+            pointElement->QueryFloatAttribute("y", &y);
+            pointElement->QueryFloatAttribute("z", &z);
+            points.emplace_back(x, y, z);
+          }
+          group->addTransform(new CatmullROM(points, time, align));
+        } else {
+          float x = 0, y = 0, z = 0, angle = 0;
+          
+          child->QueryFloatAttribute("x", &x);
+          child->QueryFloatAttribute("y", &y);
+          child->QueryFloatAttribute("z", &z);
+
+          if (transformType == "translate") {
+              group->addTransform(new Translate(x, y, z));
+          } else if (transformType == "rotate") {
+            float angleOrTime = 0;
+            bool isTime = false;
+            if (child->QueryFloatAttribute("time", &time) == tinyxml2::XML_SUCCESS) {
+              angleOrTime = time;
+              isTime = true;
+            } else {
+              child->QueryFloatAttribute("angle", &angle);
+              angleOrTime = angle;
+            }
+              group->addTransform(new Rotate(angleOrTime, x, y, z, isTime));
+          } else if (transformType == "scale") {
+              group->addTransform(new Scale(x, y, z));
+          }
         }
     }
   }

@@ -27,6 +27,8 @@ bool axis = true;
 
 ParsedWorld *world;
 
+float time0 = 0;
+
 void changeSize(int w, int h) {
 
   // Prevent a divide by zero, when window is too short
@@ -179,6 +181,8 @@ int main(int argc, char **argv) {
   cam_radius = sqrt(camX * camX + camY * camY + camZ * camZ);
   cam_alpha = atan2f(camX, camZ);
   cam_beta = asinf(camY / cam_radius);
+
+  time0 = glutGet(GLUT_ELAPSED_TIME);
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);

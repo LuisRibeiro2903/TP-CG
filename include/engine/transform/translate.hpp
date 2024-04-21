@@ -2,6 +2,7 @@
 #define TRANSLATE
 
 #include "engine/transform/transform.hpp"
+#include <GL/gl.h>
 
 class Translate : public Transform {
 private:

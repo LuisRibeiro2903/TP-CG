@@ -2,6 +2,7 @@
 #define SCALE
 
 #include "transform.hpp"
+#include <GL/gl.h>
 
 class Scale : public Transform {
 private:

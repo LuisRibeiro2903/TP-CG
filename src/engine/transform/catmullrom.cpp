@@ -70,7 +70,7 @@ void CatmullROM::applyTransform() const {
 
     float m[16];
     float pos[3], deriv[3];
-
+    //TODO: alterar este valor de static para específico á curva
     static float prev_y[3] = {0, 1, 0};
     renderCatmullRomCurve();
 

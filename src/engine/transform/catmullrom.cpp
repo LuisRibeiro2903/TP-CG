@@ -64,21 +64,9 @@ void CatmullROM::renderCatmullRomCurve() const{
     glEnd();
 }
 
-
-
-void CatmullROM::applyTransform() const {
+void CatmullROM::alignCatmullRom(float *deriv) {
 
     float m[16];
-    float pos[3], deriv[3];
-    //TODO: alterar este valor de static para específico á curva
-    static float prev_y[3] = {0, 1, 0};
-    renderCatmullRomCurve();
-
-    float t = ((float) glutGet(GLUT_ELAPSED_TIME) / 1000 ) / time;
-
-    getGlobalCatmullRomPoint(t, pos, deriv);
-
-    glTranslatef(pos[0], pos[1], pos[2]);
 
     float X[3] = {deriv[0], deriv[1], deriv[2]};
     normalize(X);
@@ -96,8 +84,23 @@ void CatmullROM::applyTransform() const {
     buildRotMatrix(X, Y, Z, m);
 
     glMultMatrixf(m);
+}
 
+void CatmullROM::applyTransform() {
 
+    float pos[3], deriv[3];
+    
+    renderCatmullRomCurve();
+
+    float t = ((float) glutGet(GLUT_ELAPSED_TIME) / 1000 ) / time;
+
+    getGlobalCatmullRomPoint(t, pos, deriv);
+
+    glTranslatef(pos[0], pos[1], pos[2]);
+
+    if(align) {
+        alignCatmullRom(deriv);
+    }
 
 }
 

@@ -12,7 +12,7 @@ private:
 
 public:
   Rotate(float angleOrTime, float x, float y, float z, bool isTime);
-  void applyTransform() const override;
+  void applyTransform() override;
 };
 
 #endif

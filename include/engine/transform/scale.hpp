@@ -10,7 +10,7 @@ private:
 
 public:
   Scale(float x, float y, float z);
-  void applyTransform() const override;
+  void applyTransform() override;
 };
 
 #endif

@@ -85,7 +85,7 @@ GroupNode::GroupNode() : color{{1.0f, 1.0f, 1.0f}} {}
 void GroupNode::draw() {
   glPushMatrix();
 
-  for (const Transform *t : transforms) {
+  for (Transform *t : transforms) {
     t->applyTransform();
   }
 

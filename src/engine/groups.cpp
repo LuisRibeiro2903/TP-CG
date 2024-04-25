@@ -15,49 +15,30 @@
 
 using namespace std;
 
-vector<vector<Point>> parse3dFiles(vector<string *> models) {
-  vector<vector<Point>> all_vertices;
+vector<Point> parse3dFile(string * model) {
+  vector<Point> vertices;
 
-  for (const string *model : models) {
-    vector<Point> vertices;
-    ifstream file(*model);
+  ifstream file(*model);
 
-    if (!file.is_open()) {
-      cerr << "Error: file not found" << endl;
-      exit(1);
-    }
-
-    int n_vertices;
-    file >> n_vertices;
-    for (int i = 0; i < n_vertices; i++) {
-      float x, y, z;
-      char comma;
-      file >> x >> comma >> y >> comma >> z;
-      vertices.push_back(Point(x, y, z));
-    }
-
-    all_vertices.push_back(vertices);
-    file.close();
+  if (!file.is_open()) {
+    cerr << "Error: file not found" << endl;
+    exit(1);
   }
 
-  return all_vertices;
-}
-
-void drawModels(const vector<vector<Point>> &model_vertices) {
-  for (const vector<Point> &model : model_vertices) {
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, model.size() * sizeof(Point), model.data(),
-                 GL_STATIC_DRAW);
-
-    glVertexPointer(3, GL_FLOAT, 0, nullptr);
-    glDrawArrays(GL_TRIANGLES, 0, model.size());
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glDeleteBuffers(1, &vbo);
+  int n_vertices;
+  file >> n_vertices;
+  for (int i = 0; i < n_vertices; i++) {
+    float x, y, z;
+    char comma;
+    file >> x >> comma >> y >> comma >> z;
+    vertices.emplace_back(x, y, z);
   }
+
+  file.close();
+
+  return vertices;
 }
+
 
 void GroupNode::addTransform(Transform *transform) {
   transforms.push_back(transform);
@@ -82,16 +63,54 @@ GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
 
 GroupNode::GroupNode() : color{{1.0f, 1.0f, 1.0f}} {}
 
+void GroupNode::drawModels() {
+
+  for (int i = 0; i < n_models; i++) {
+    glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_TRIANGLES, 0, model_sizes[i]);
+  }
+  
+}
+
+void GroupNode::createVBOs() {
+
+  if (models.size() == 0) {
+    n_models = 0;
+    return;
+  }
+  n_models = models.size();
+  model_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
+  model_sizes = (size_t *)malloc(n_models * sizeof(size_t));
+  glGenBuffers(n_models, model_vbos);
+
+  for(int i = 0; i < n_models; i++) {
+    vector<Point> position = parse3dFile(models[i]);
+    model_sizes[i] = position.size();
+    glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
+    glBufferData(GL_ARRAY_BUFFER, position.size() * sizeof(Point), &(position[0]), GL_STATIC_DRAW);
+  }
+}
+
+void GroupNode::initializeVBOs() {
+  this->createVBOs();
+  for (GroupNode * node : sub_nodes) {
+    node->initializeVBOs();
+  }
+}
+
 void GroupNode::draw() {
   glPushMatrix();
 
-  for (const Transform *t : transforms) {
+  glColor3f(1.0f, 1.0f, 1.0f);
+
+  for (Transform *t : transforms) {
     t->applyTransform();
   }
 
   glColor3f(color[0], color[1], color[2]);
 
-  drawModels(parse3dFiles(models));
+  this->drawModels();
 
   for (GroupNode * node : sub_nodes) {
     node->draw();

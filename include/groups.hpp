@@ -2,6 +2,7 @@
 #define GROUPS
 
 #include "engine/transform/transform.hpp"
+#include <GL/glew.h>
 #include <string>
 #include <vector>
 #include <array>
@@ -13,13 +14,22 @@ private:
   vector<GroupNode *> sub_nodes;
   vector<Transform *> transforms;
   vector<string *> models;
+  GLuint * model_vbos;
+  size_t * model_sizes;
+  int n_models;
   array<float, 3> color;
+
+  void drawModels();
+  void createVBOs();
 
 public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
             vector<string *> &_models, array<float, 3> &_color);
   GroupNode();
   void draw();
+
+  void initializeVBOs();
+
 
   void addTransform(Transform *transform);
   void addModel(string *model);

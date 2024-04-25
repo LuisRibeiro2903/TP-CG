@@ -6,7 +6,7 @@ using namespace std;
 
 class Transform {
 public:
-  virtual void applyTransform() const = 0;
+  virtual void applyTransform() = 0;
 };
 
 #endif

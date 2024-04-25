@@ -155,13 +155,7 @@ void handleKeyboard(unsigned char key, int x, int y) {
   updatePos();
 }
 
-int main(int argc, char **argv) {
-  if (argc != 2) {
-    std::cerr << "Usage: " << argv[0] << " <input_file.xml>" << std::endl;
-    return 1;
-  }
-
-  std::string input_file_name = argv[1];
+void init(std::string input_file_name) {
   world = worldParser(input_file_name.c_str());
 
   camX = world->lookAt[0].x();
@@ -183,6 +177,15 @@ int main(int argc, char **argv) {
   cam_beta = asinf(camY / cam_radius);
 
   time0 = glutGet(GLUT_ELAPSED_TIME);
+}
+
+int main(int argc, char **argv) {
+  if (argc != 2) {
+    std::cerr << "Usage: " << argv[0] << " <input_file.xml>" << std::endl;
+    return 1;
+  }
+
+  init(argv[1]);
 
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
@@ -198,6 +201,10 @@ int main(int argc, char **argv) {
 #ifndef __APPLE__
   glewInit();
 #endif
+
+  world->rootGroup->initializeVBOs();
+
+  // We only obtain the window width and height after parsing the file
 
   //  OpenGL settings
   glEnable(GL_DEPTH_TEST);

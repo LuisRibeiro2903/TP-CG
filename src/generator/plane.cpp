@@ -1,11 +1,13 @@
 #include "point.hpp"
+#include "parsedModel.hpp"
 #include <vector>
 
 using namespace std;
 
-vector<Point> generatePlane(float length, int divisions)
+ParsedModel generatePlane(float length, int divisions)
 {
-    vector<Point> vertices;
+  vector<Point> vertices;
+  vector<Point> normals;
 
   float step = length / divisions;
 
@@ -22,13 +24,19 @@ vector<Point> generatePlane(float length, int divisions)
 
             // Add vertices for the two triangles in the square
             vertices.emplace_back(x0, 0.0f, z0);
+            normals.emplace_back(0, 1, 0);
             vertices.emplace_back(x1, 0.0f, z1);
+            normals.emplace_back(0, 1, 0);
             vertices.emplace_back(x1, 0.0f, z0);
+            normals.emplace_back(0, 1, 0);
             vertices.emplace_back(x0, 0.0f, z0);
+            normals.emplace_back(0, 1, 0);
             vertices.emplace_back(x0, 0.0f, z1);
+            normals.emplace_back(0, 1, 0);
             vertices.emplace_back(x1, 0.0f, z1);
+            normals.emplace_back(0, 1, 0);
         }
     }
 
-  return vertices;
+  return ParsedModel(vertices, normals, {});
 }

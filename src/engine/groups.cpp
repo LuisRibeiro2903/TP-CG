@@ -1,8 +1,9 @@
 #include "groups.hpp"
 #include "engine/transform/transform.hpp"
+#include <engine/transform/transform.hpp>
+#include <engine/color.hpp>
 #include "parser.hpp"
 #include "point.hpp"
-#include <engine/transform/transform.hpp>
 #include <fstream>
 #include <iostream>
 
@@ -48,20 +49,18 @@ void GroupNode::addModel(string *model) { models.push_back(model); }
 
 void GroupNode::addSubNode(GroupNode *node) { sub_nodes.push_back(node); }
 
-void GroupNode::setColor(float r, float g, float b) {
-  color[0] = r;
-  color[1] = g;
-  color[2] = b;
+void GroupNode::addColor(Color * _color) {
+  color = color;
 }
 
 GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
                      vector<Transform *> &_transforms,
                      vector<string *> &_models,
-                     array<float, 3> &_color)
+                    Color * _color)
     : sub_nodes(_sub_nodes), transforms(_transforms), models(_models), color(_color){}
 
 
-GroupNode::GroupNode() : color{{1.0f, 1.0f, 1.0f}} {}
+GroupNode::GroupNode()  { color = new Color(); }
 
 void GroupNode::drawModels() {
 
@@ -108,7 +107,8 @@ void GroupNode::draw() {
     t->applyTransform();
   }
 
-  glColor3f(color[0], color[1], color[2]);
+  //TODO: set color
+  //glColor3f(color[0], color[1], color[2]);
 
   this->drawModels();
 

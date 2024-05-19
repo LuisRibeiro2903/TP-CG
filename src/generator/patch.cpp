@@ -6,6 +6,7 @@
 #include <fstream>
 #include <point.hpp>
 #include <cgmath.hpp>
+#include "parsedModel.hpp"
 
 using namespace std;
 
@@ -55,7 +56,7 @@ vector<vector<vector<Point>>> parsePatch (const string &patchfile) {
 }
 
 
-vector<Point> generatePatch(string &patchfile, float tesselationLevel) {
+ParsedModel generatePatch(string &patchfile, float tesselationLevel) {
 
     vector<vector<vector<Point>>> patches = parsePatch(patchfile);
 
@@ -114,7 +115,7 @@ vector<Point> generatePatch(string &patchfile, float tesselationLevel) {
         }
     }
 
-    return vertices;
+    return ParsedModel(vertices, {}, {});
 
 }
   

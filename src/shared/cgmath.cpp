@@ -25,6 +25,22 @@ void normalize(float *a) {
 	a[2] = a[2]/l;
 }
 
+void normalize(Point& p) {
+
+    float l = sqrt(p.x()*p.x() + p.y() * p.y() + p.z() * p.z());
+
+    p.setX(p.x()/l);
+    p.setY(p.y()/l);
+    p.setZ(p.z()/l);
+}
+
+Point normalize2(Point& p) {
+
+    float l = sqrt(p.x()*p.x() + p.y() * p.y() + p.z() * p.z());
+
+   return Point(p.x()/l, p.y()/l, p.z()/l);
+}
+
 
 float length(float *v) {
 

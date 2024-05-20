@@ -1,6 +1,5 @@
 #include "parsedModel.hpp"
 #include "point.hpp"
-#include <tuple>
 #include <vector>
 
 void generatePlanesXZ(float dimension, int divisions, vector<Point> &vertices,

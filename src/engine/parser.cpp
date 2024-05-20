@@ -6,6 +6,7 @@
 #include "engine/lights/light.hpp"
 #include "engine/lights/lightDir.hpp"
 #include "engine/lights/lightPoint.hpp"
+#include "engine/lights/lightSpot.hpp"
 #include "engine/color.hpp"
 #include "groups.hpp"
 #include "tinyxml2.h"
@@ -155,7 +156,19 @@ ParsedWorld * worldParser(const char *filename) {
           LightPoint * l = new LightPoint(posX, posY, posZ, lightId);
           lights.push_back(l);
           break;
-        
+        }
+        case 's': {
+          float posX, posY, posZ, dirX, dirY, dirZ, cutoff;
+          lightElement->QueryFloatAttribute("posx", &posX);
+          lightElement->QueryFloatAttribute("posy", &posY);
+          lightElement->QueryFloatAttribute("posz", &posZ);
+          lightElement->QueryFloatAttribute("dirx", &dirX);
+          lightElement->QueryFloatAttribute("diry", &dirY);
+          lightElement->QueryFloatAttribute("dirz", &dirZ);
+          lightElement->QueryFloatAttribute("cutoff", &cutoff);
+          LightSpot * l = new LightSpot(posX, posY, posZ, dirX, dirY, dirZ, cutoff, lightId);
+          lights.push_back(l);
+          break;
         }
       }
     }
@@ -233,10 +246,10 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
   tinyxml2::XMLElement* modelsElement = groupElement->FirstChildElement("models");
   if (modelsElement) {
     //TODO: One color for each model
+    vector<Color *> colors;
     for (tinyxml2::XMLElement* model = modelsElement->FirstChildElement("model"); model != nullptr; model = model->NextSiblingElement("model")) {
       const char *file = model->Attribute("file");
       group->addModel(new string(file));
-      vector<Color *> colors;
       tinyxml2::XMLElement* colorElement = model->FirstChildElement("color");
       if (colorElement) {
         std::tuple<int, int, int> diffuse = std::make_tuple(200, 200, 200);
@@ -281,10 +294,10 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
           shininessElement->QueryIntAttribute("value", &shininess);
         }
         colors.push_back(new Color(diffuse, specular, ambient, emissive, shininess));
-        break;
       } else {
         colors.push_back(new Color());
       }
+      group->addColor(colors);
     }
   }
   

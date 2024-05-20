@@ -57,22 +57,27 @@ void GroupNode::addModel(string *model) { models.push_back(model); }
 
 void GroupNode::addSubNode(GroupNode *node) { sub_nodes.push_back(node); }
 
-void GroupNode::addColor(Color * _color) {
+void GroupNode::addColor(vector<Color *> _color) {
   color = _color;
 }
 
 GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
                      vector<Transform *> &_transforms,
                      vector<string *> &_models,
-                    Color * _color)
+                    vector<Color *> _color)
     : sub_nodes(_sub_nodes), transforms(_transforms), models(_models), color(_color){}
 
 
-GroupNode::GroupNode()  { color = new Color(); }
+GroupNode::GroupNode()  {  }
 
 void GroupNode::drawModels() {
 
   for (int i = 0; i < n_models; i++) {
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, color[i]->diffuse);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, color[i]->specular);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, color[i]->ambient);
+    glMaterialfv(GL_FRONT, GL_EMISSION, color[i]->emissive);
+    glMaterialf(GL_FRONT, GL_SHININESS, color[i]->shininess);
     glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
     glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
@@ -115,17 +120,12 @@ void GroupNode::initializeVBOs() {
 }
 
 void GroupNode::applyColor() {
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, color->diffuse);
-  glMaterialfv(GL_FRONT, GL_SPECULAR, color->specular);
-  glMaterialfv(GL_FRONT, GL_AMBIENT, color->ambient);
-  glMaterialfv(GL_FRONT, GL_EMISSION, color->emissive);
-  glMaterialf(GL_FRONT, GL_SHININESS, color->shininess);
+  
 }
 
 void GroupNode::draw() {
   glPushMatrix();
 
-  this->applyColor();
 
   for (Transform *t : transforms) {
     t->applyTransform();

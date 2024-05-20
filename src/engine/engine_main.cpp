@@ -169,8 +169,16 @@ void handleKeyboard(unsigned char key, int x, int y) {
 void initializeLights() {
   float amb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
-  for (int i = 0; i < world->n_lights; i++) {
-    world->lights[i]->initialize();
+  if(world->n_lights > 0) {
+    if(world->n_lights > 8) {
+      std::cerr << "Too many lights, only the first 8 will be used" << std::endl;
+      world->n_lights = 8;
+    }
+    for (int i = 0; i < world->n_lights; i++) {
+      world->lights[i]->initialize();
+    }
+  } else {
+    std::cerr << "No lights in the scene" << std::endl;
   }
 }
 
@@ -230,6 +238,7 @@ int main(int argc, char **argv) {
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_LIGHTING);
+  glEnable(GL_RESCALE_NORMAL);
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_NORMAL_ARRAY);
 

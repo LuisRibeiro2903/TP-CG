@@ -20,7 +20,7 @@ private:
   GLuint * normal_vbos;
   size_t * model_sizes;
   int n_models;
-  Color ** color;
+  vector<Color *> color;
 
   void drawModels();
   void createVBOs();
@@ -28,7 +28,7 @@ private:
 
 public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
-            vector<string *> &_models, Color *_color);
+            vector<string *> &_models, vector<Color *> _color);
   GroupNode();
   void draw();
 
@@ -38,7 +38,7 @@ public:
   void addTransform(Transform *transform);
   void addModel(string *model);
   void addSubNode(GroupNode *node);
-  void addColor(Color *color);
+  void addColor(vector<Color *> color);
 };
 
 #endif

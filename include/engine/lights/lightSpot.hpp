@@ -3,6 +3,8 @@
 
 #include "light.hpp"
 
+#include <GL/glew.h>
+
 class LightSpot : public Light {
     private:
         float posX, posY, posZ;
@@ -10,7 +12,8 @@ class LightSpot : public Light {
         float cutoff;
 
     public:
-        LightSpot(float posX, float posY, float posZ, float dirX, float dirY, float dirZ, float cutoff, float exponent);
+        LightSpot(float posX, float posY, float posZ, float dirX, float dirY, float dirZ, float cutoff, int lightID)
+            : Light(lightID), posX(posX), posY(posY), posZ(posZ), dirX(dirX), dirY(dirY), dirZ(dirZ), cutoff(cutoff) {};
         void applyLight() override;
 };
 

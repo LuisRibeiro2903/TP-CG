@@ -7,6 +7,7 @@
 ParsedModel generateCone(float radius, float height, int slices, int stacks) {
     std::vector<Point> vertices;
     std::vector<Point> normals;
+    float coneAngle = atan(radius / height);
 
     // Vertice para o "corpo" do cone
     for (int i = 0; i < slices; i++) {
@@ -44,24 +45,27 @@ ParsedModel generateCone(float radius, float height, int slices, int stacks) {
             Point p3(currentRadius * cos(nextAngle), currentHeight, currentRadius * sin(nextAngle));
             Point p4(nextRadius * cos(nextAngle), nextHeight, nextRadius * sin(nextAngle));
 
-            Point n1(cos(angle), height / radius, sin(angle));
-            Point n2(cos(angle), height / radius, sin(angle));
-            Point n3(cos(nextAngle), height / radius, sin(nextAngle));
-            Point n4(cos(nextAngle), height / radius, sin(nextAngle));
+            Point n1(cos(angle) * cos(coneAngle), sin(coneAngle), sin(angle) * cos(coneAngle));
+            Point n2(cos(angle) * cos(coneAngle), sin(coneAngle), sin(angle) * cos(coneAngle));
+            Point n3(cos(nextAngle) * cos(coneAngle), sin(coneAngle), sin(nextAngle) * cos(coneAngle));
+            Point n4(cos(nextAngle) * cos(coneAngle), sin(coneAngle), sin(nextAngle) * cos(coneAngle));
 
-            normalize(n1);
-            normalize(n2);
-            normalize(n3);
-            normalize(n4);
+            
 
             // Triângulos que compõem cada fatia do cone
             vertices.push_back(p1);
+            normals.push_back(n1);
             vertices.push_back(p2);
+            normals.push_back(n2);
             vertices.push_back(p4);
+            normals.push_back(n4);
 
             vertices.push_back(p1);
+            normals.push_back(n1);
             vertices.push_back(p4);
+            normals.push_back(n4);
             vertices.push_back(p3);
+            normals.push_back(n3);  
         }
     }
 

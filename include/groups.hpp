@@ -17,6 +17,7 @@ private:
   vector<string *> models;
   GLuint * model_vbos;
   GLuint * normal_vbos;
+  GLuint * texture_vbos;
   size_t * model_sizes;
   int n_models;
   Color * color;

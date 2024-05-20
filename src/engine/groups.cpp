@@ -70,12 +70,16 @@ GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
 
 GroupNode::GroupNode()  { color = new Color(); }
 
+
+//TODO: Comecar a implementar texturas
 void GroupNode::drawModels() {
 
   for (int i = 0; i < n_models; i++) {
     glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
     glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
+    glNormalPointer(GL_FLOAT, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, texture_vbos[i]);
     glNormalPointer(GL_FLOAT, 0, 0);
     glDrawArrays(GL_TRIANGLES, 0, model_sizes[i]);
   }

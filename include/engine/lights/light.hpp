@@ -1,6 +1,7 @@
 #ifndef LIGHT_HPP
 #define LIGHT_HPP
 
+#include "engine/color.hpp"
 
 class Light {
     protected:

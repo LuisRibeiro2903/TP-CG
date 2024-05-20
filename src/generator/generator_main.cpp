@@ -1,14 +1,20 @@
 #include "generators.hpp"
+#include "parsedModel.hpp"
 #include <fstream>
 #include <string>
 #include <iostream>
 #include <vector>
 
-void write3dFile(std::vector<Point> vertices, std::string output_file_name) {
+void write3dFile(ParsedModel model, std::string output_file_name) {
   std::ofstream file(output_file_name);
-  file << vertices.size() << std::endl;
+  file << model.getSize() << std::endl;
+  std::vector<Point> vertices = model.getVertex();
   for (Point vertex : vertices) {
     file << vertex.x() << "," << vertex.y() << "," << vertex.z() << std::endl;
+  }
+  std::vector<Point> normals = model.getNormals();
+  for (Point normal : normals) {
+    file << normal.x() << "," << normal.y() << "," << normal.z() << std::endl;
   }
   file.close();
 }

@@ -1,6 +1,7 @@
 #include "groups.hpp"
 #include "engine/transform/transform.hpp"
 #include <engine/transform/transform.hpp>
+#include "parsedModel.hpp"
 #include <engine/color.hpp>
 #include "parser.hpp"
 #include "point.hpp"
@@ -16,8 +17,9 @@
 
 using namespace std;
 
-vector<Point> parse3dFile(string * model) {
+ParsedModel parse3dFile(string * model) {
   vector<Point> vertices;
+  vector<Point> normals;
 
   ifstream file(*model);
 
@@ -34,10 +36,16 @@ vector<Point> parse3dFile(string * model) {
     file >> x >> comma >> y >> comma >> z;
     vertices.emplace_back(x, y, z);
   }
+  for(int i = 0; i < n_vertices; i++) {
+    float x, y, z;
+    char comma;
+    file >> x >> comma >> y >> comma >> z;
+    normals.emplace_back(x, y, z);
+  }
 
   file.close();
 
-  return vertices;
+  return ParsedModel(vertices, normals, {});
 }
 
 
@@ -50,7 +58,7 @@ void GroupNode::addModel(string *model) { models.push_back(model); }
 void GroupNode::addSubNode(GroupNode *node) { sub_nodes.push_back(node); }
 
 void GroupNode::addColor(Color * _color) {
-  color = color;
+  color = _color;
 }
 
 GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
@@ -67,6 +75,8 @@ void GroupNode::drawModels() {
   for (int i = 0; i < n_models; i++) {
     glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
     glVertexPointer(3, GL_FLOAT, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
+    glNormalPointer(GL_FLOAT, 0, 0);
     glDrawArrays(GL_TRIANGLES, 0, model_sizes[i]);
   }
   
@@ -80,14 +90,20 @@ void GroupNode::createVBOs() {
   }
   n_models = models.size();
   model_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
+  normal_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
   model_sizes = (size_t *)malloc(n_models * sizeof(size_t));
   glGenBuffers(n_models, model_vbos);
+  glGenBuffers(n_models, normal_vbos);
 
   for(int i = 0; i < n_models; i++) {
-    vector<Point> position = parse3dFile(models[i]);
+    ParsedModel model = parse3dFile(models[i]);
+    vector<Point> position = model.getVertex();
     model_sizes[i] = position.size();
     glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
     glBufferData(GL_ARRAY_BUFFER, position.size() * sizeof(Point), &(position[0]), GL_STATIC_DRAW);
+    vector<Point> normal = model.getNormals();
+    glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
+    glBufferData(GL_ARRAY_BUFFER, normal.size() * sizeof(Point), &(normal[0]), GL_STATIC_DRAW);
   }
 }
 
@@ -98,17 +114,23 @@ void GroupNode::initializeVBOs() {
   }
 }
 
+void GroupNode::applyColor() {
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, color->diffuse);
+  glMaterialfv(GL_FRONT, GL_SPECULAR, color->specular);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, color->ambient);
+  glMaterialfv(GL_FRONT, GL_EMISSION, color->emissive);
+  glMaterialf(GL_FRONT, GL_SHININESS, color->shininess);
+}
+
 void GroupNode::draw() {
   glPushMatrix();
 
-  glColor3f(1.0f, 1.0f, 1.0f);
+  this->applyColor();
 
   for (Transform *t : transforms) {
     t->applyTransform();
   }
 
-  //TODO: set color
-  //glColor3f(color[0], color[1], color[2]);
 
   this->drawModels();
 

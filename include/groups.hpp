@@ -16,12 +16,14 @@ private:
   vector<Transform *> transforms;
   vector<string *> models;
   GLuint * model_vbos;
+  GLuint * normal_vbos;
   size_t * model_sizes;
   int n_models;
   Color * color;
 
   void drawModels();
   void createVBOs();
+  void applyColor();
 
 public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,

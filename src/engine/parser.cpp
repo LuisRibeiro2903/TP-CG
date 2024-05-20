@@ -3,6 +3,8 @@
 #include "engine/transform/rotate.hpp"
 #include "engine/transform/scale.hpp"
 #include "engine/transform/catmullrom.hpp"
+#include "engine/lights/light.hpp"
+#include "engine/lights/lightDir.hpp"
 #include "engine/color.hpp"
 #include "groups.hpp"
 #include "tinyxml2.h"
@@ -12,9 +14,9 @@
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
                          std::array<float, 3> &projection, int windowWidth,
-                         int windowHeight, GroupNode * rootGroup)
+                         int windowHeight, GroupNode * rootGroup, vector<Light *> lights, int n_lights)
     : lookAt(lookAt), projection(projection), windowWidth(windowWidth),
-      windowHeight(windowHeight), rootGroup(rootGroup) {}
+      windowHeight(windowHeight), rootGroup(rootGroup), lights(lights), n_lights(n_lights) {}
 
 vector<vector<Point>> parse3dFile(vector<string> models) {
   vector<vector<Point>> all_vertices;
@@ -126,6 +128,29 @@ ParsedWorld * worldParser(const char *filename) {
     exit(1);
   }
 
+
+  vector<Light *> lights;
+  int lightId = 0;
+  tinyxml2::XMLElement *lightsElement = root->FirstChildElement("lights");
+  if(lightsElement) {
+    for (tinyxml2::XMLElement *lightElement = lightsElement->FirstChildElement("light"); lightElement != nullptr; lightElement = lightElement->NextSiblingElement("light"), lightId++) {
+      const char *lightType = lightElement->Attribute("type");
+      lightElement->QueryStringAttribute("type", &lightType);
+      switch (lightType[0]) {
+        case 'd': {
+          float dirX, dirY, dirZ;
+          lightElement->QueryFloatAttribute("dirx", &dirX);
+          lightElement->QueryFloatAttribute("diry", &dirY);
+          lightElement->QueryFloatAttribute("dirz", &dirZ);
+          LightDir * l = new LightDir(dirX, dirY, dirZ, lightId);
+          lights.push_back(l);
+          break;
+        }
+      }
+    }
+
+  }
+
   
   GroupNode *rootGroup = nullptr;
   tinyxml2::XMLElement *primaryGroupElement = root->FirstChildElement("group");
@@ -136,7 +161,7 @@ ParsedWorld * worldParser(const char *filename) {
     exit(1);
   }
 
-  return new ParsedWorld(lookAt, projection, windowWidth, windowHeight, rootGroup);
+  return new ParsedWorld(lookAt, projection, windowWidth, windowHeight, rootGroup, lights, lights.size());
   
 
 }
@@ -196,6 +221,7 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
 
   tinyxml2::XMLElement* modelsElement = groupElement->FirstChildElement("models");
   if (modelsElement) {
+    //TODO: One color for each model
     for (tinyxml2::XMLElement* model = modelsElement->FirstChildElement("model"); model != nullptr; model = model->NextSiblingElement("model")) {
       const char *file = model->Attribute("file");
       group->addModel(new string(file));
@@ -242,7 +268,9 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
         if (shininessElement) {
           shininessElement->QueryIntAttribute("value", &shininess);
         }
-        group->addColor(new Color(diffuse, specular, ambient, emissive, shininess));
+        Color * color = new Color(diffuse, specular, ambient, emissive, shininess);
+        group->addColor(color);
+        break;
       } else {
         group->addColor(new Color());
       }

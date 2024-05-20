@@ -22,7 +22,7 @@ float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
 float fov, near, far;
 
-bool wireframe = true;
+bool wireframe = false;
 bool axis = true;
 
 ParsedWorld *world;
@@ -54,6 +54,13 @@ void changeSize(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
 }
 
+void renderLights() {
+  for (int i = 0; i < world->n_lights; i++) {
+    world->lights[i]->applyLight();
+  }
+
+}
+
 void renderScene(void) {
   // Clear Color and Depth Buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -67,7 +74,7 @@ void renderScene(void) {
   else
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-
+  glDisable(GL_LIGHTING);
   if (axis)
   {
     // Draw axis
@@ -89,6 +96,10 @@ void renderScene(void) {
 
   // Set the color to white by default
   glColor3f(1.0f, 1.0f, 1.0f);
+  glEnable(GL_LIGHTING);
+
+  // Draw the lights
+  renderLights();
 
   // draw the scene
   world->rootGroup->draw();
@@ -155,6 +166,14 @@ void handleKeyboard(unsigned char key, int x, int y) {
   updatePos();
 }
 
+void initializeLights() {
+  float amb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+  glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
+  for (int i = 0; i < world->n_lights; i++) {
+    world->lights[i]->initialize();
+  }
+}
+
 void init(std::string input_file_name) {
   world = worldParser(input_file_name.c_str());
 
@@ -203,13 +222,16 @@ int main(int argc, char **argv) {
 #endif
 
   world->rootGroup->initializeVBOs();
+  initializeLights();
 
   // We only obtain the window width and height after parsing the file
 
   //  OpenGL settings
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
+  glEnable(GL_LIGHTING);
   glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
 
   // enter GLUT's main cycle
   glutMainLoop();

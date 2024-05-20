@@ -1,10 +1,10 @@
 #include "groups.hpp"
 #include "engine/transform/transform.hpp"
-#include <engine/transform/transform.hpp>
 #include "parsedModel.hpp"
-#include <engine/color.hpp>
 #include "parser.hpp"
 #include "point.hpp"
+#include <engine/color.hpp>
+#include <engine/transform/transform.hpp>
 #include <fstream>
 #include <iostream>
 
@@ -17,9 +17,10 @@
 
 using namespace std;
 
-ParsedModel parse3dFile(string * model) {
+ParsedModel parse3dFile(string *model) {
   vector<Point> vertices;
   vector<Point> normals;
+  vector<Point> textures;
 
   ifstream file(*model);
 
@@ -36,109 +37,50 @@ ParsedModel parse3dFile(string * model) {
     file >> x >> comma >> y >> comma >> z;
     vertices.emplace_back(x, y, z);
   }
-  for(int i = 0; i < n_vertices; i++) {
+  for (int i = 0; i < n_vertices; i++) {
     float x, y, z;
     char comma;
     file >> x >> comma >> y >> comma >> z;
     normals.emplace_back(x, y, z);
   }
+  for (int i = 0; i < n_vertices; i++) {
+    float x, y, z;
+    char comma;
+    file >> x >> comma >> y >> comma >> z;
+    textures.emplace_back(x, y, z);
+  }
 
   file.close();
 
-  return ParsedModel(vertices, normals, {});
+  return ParsedModel(vertices, normals, textures);
 }
-
 
 void GroupNode::addTransform(Transform *transform) {
   transforms.push_back(transform);
 }
 
-void GroupNode::addModel(string *model) { models.push_back(model); }
+void GroupNode::addModel(Model *m) { models.push_back(m); }
 
 void GroupNode::addSubNode(GroupNode *node) { sub_nodes.push_back(node); }
 
-void GroupNode::addColor(vector<Color *> _color) {
-  color = _color;
-}
-
 GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
-                     vector<Transform *> &_transforms,
-                     vector<string *> &_models,
-                    vector<Color *> _color)
-    : sub_nodes(_sub_nodes), transforms(_transforms), models(_models), color(_color){}
+                     vector<Transform *> &_transforms, vector<Model *> &_models)
+    : sub_nodes(_sub_nodes), transforms(_transforms), models(_models) {}
 
-
-GroupNode::GroupNode()  {  }
-
-
-//TODO: Comecar a implementar texturas
-void GroupNode::drawModels() {
-
-  for (int i = 0; i < n_models; i++) {
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, color[i]->diffuse);
-    glMaterialfv(GL_FRONT, GL_SPECULAR, color[i]->specular);
-    glMaterialfv(GL_FRONT, GL_AMBIENT, color[i]->ambient);
-    glMaterialfv(GL_FRONT, GL_EMISSION, color[i]->emissive);
-    glMaterialf(GL_FRONT, GL_SHININESS, color[i]->shininess);
-    glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
-    glNormalPointer(GL_FLOAT, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, texture_vbos[i]);
-    glNormalPointer(GL_FLOAT, 0, 0);
-    glDrawArrays(GL_TRIANGLES, 0, model_sizes[i]);
-  }
-  
-}
-
-void GroupNode::createVBOs() {
-
-  if (models.size() == 0) {
-    n_models = 0;
-    return;
-  }
-  n_models = models.size();
-  model_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
-  normal_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
-  model_sizes = (size_t *)malloc(n_models * sizeof(size_t));
-  glGenBuffers(n_models, model_vbos);
-  glGenBuffers(n_models, normal_vbos);
-
-  for(int i = 0; i < n_models; i++) {
-    ParsedModel model = parse3dFile(models[i]);
-    vector<Point> position = model.getVertex();
-    model_sizes[i] = position.size();
-    glBindBuffer(GL_ARRAY_BUFFER, model_vbos[i]);
-    glBufferData(GL_ARRAY_BUFFER, position.size() * sizeof(Point), &(position[0]), GL_STATIC_DRAW);
-    vector<Point> normal = model.getNormals();
-    glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
-    glBufferData(GL_ARRAY_BUFFER, normal.size() * sizeof(Point), &(normal[0]), GL_STATIC_DRAW);
-  }
-}
-
-void GroupNode::initializeVBOs() {
-  this->createVBOs();
-  for (GroupNode * node : sub_nodes) {
-    node->initializeVBOs();
-  }
-}
-
-void GroupNode::applyColor() {
-  
-}
+GroupNode::GroupNode() {}
 
 void GroupNode::draw() {
   glPushMatrix();
-
 
   for (Transform *t : transforms) {
     t->applyTransform();
   }
 
+  for (Model *m : models) {
+    m->draw();
+  }
 
-  this->drawModels();
-
-  for (GroupNode * node : sub_nodes) {
+  for (GroupNode *node : sub_nodes) {
     node->draw();
   }
 

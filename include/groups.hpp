@@ -14,13 +14,14 @@ class GroupNode {
 private:
   vector<GroupNode *> sub_nodes;
   vector<Transform *> transforms;
+  //TODO: Modificar para uma estrutura de dados sobre um modelo, e aqui guardar um array/vector/pointer de modelos
   vector<string *> models;
   GLuint * model_vbos;
   GLuint * normal_vbos;
   GLuint * texture_vbos;
   size_t * model_sizes;
   int n_models;
-  Color * color;
+  Color ** color;
 
   void drawModels();
   void createVBOs();

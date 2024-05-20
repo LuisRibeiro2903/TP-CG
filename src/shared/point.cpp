@@ -44,3 +44,7 @@ void Point::setZ(float z)
     _z = z;
 }
 
+float * Point::data()
+{
+    return new float[3]{_x, _y, _z};
+}

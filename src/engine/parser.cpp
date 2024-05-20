@@ -5,6 +5,7 @@
 #include "engine/transform/catmullrom.hpp"
 #include "engine/lights/light.hpp"
 #include "engine/lights/lightDir.hpp"
+#include "engine/lights/lightPoint.hpp"
 #include "engine/color.hpp"
 #include "groups.hpp"
 #include "tinyxml2.h"
@@ -146,6 +147,16 @@ ParsedWorld * worldParser(const char *filename) {
           lights.push_back(l);
           break;
         }
+        case 'p': {
+          float posX, posY, posZ;
+          lightElement->QueryFloatAttribute("posx", &posX);
+          lightElement->QueryFloatAttribute("posy", &posY);
+          lightElement->QueryFloatAttribute("posz", &posZ);
+          LightPoint * l = new LightPoint(posX, posY, posZ, lightId);
+          lights.push_back(l);
+          break;
+        
+        }
       }
     }
 
@@ -225,6 +236,7 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
     for (tinyxml2::XMLElement* model = modelsElement->FirstChildElement("model"); model != nullptr; model = model->NextSiblingElement("model")) {
       const char *file = model->Attribute("file");
       group->addModel(new string(file));
+      vector<Color *> colors;
       tinyxml2::XMLElement* colorElement = model->FirstChildElement("color");
       if (colorElement) {
         std::tuple<int, int, int> diffuse = std::make_tuple(200, 200, 200);
@@ -268,11 +280,10 @@ GroupNode * ParseGroupElement(tinyxml2::XMLElement* groupElement) {
         if (shininessElement) {
           shininessElement->QueryIntAttribute("value", &shininess);
         }
-        Color * color = new Color(diffuse, specular, ambient, emissive, shininess);
-        group->addColor(color);
+        colors.push_back(new Color(diffuse, specular, ambient, emissive, shininess));
         break;
       } else {
-        group->addColor(new Color());
+        colors.push_back(new Color());
       }
     }
   }

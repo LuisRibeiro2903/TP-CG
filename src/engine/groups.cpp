@@ -73,6 +73,12 @@ GroupNode::GroupNode()  {  }
 void GroupNode::drawModels() {
 
   for (int i = 0; i < n_models; i++) {
+    glDisable(GL_LIGHTING);
+    glColor3f(1, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, normal_line_vbos[i]);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_LINES, 0, model_sizes[i])
+    glEnable(GL_LIGHTING);
     glMaterialfv(GL_FRONT, GL_DIFFUSE, color[i]->diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, color[i]->specular);
     glMaterialfv(GL_FRONT, GL_AMBIENT, color[i]->ambient);
@@ -87,6 +93,17 @@ void GroupNode::drawModels() {
   
 }
 
+vector<Point> createNormalLineVector(vector<Point> normals, vector<Point> vertices, int n_vertices) {
+  vector<Point> normal_lines;
+  for (int i = 0; i < n_vertices; i++) {
+    Point p = vertices[i];
+    Point n = normals[i];
+    normal_lines.push_back(p);
+    normal_lines.push_back(p + n);
+  }
+  return normal_lines;
+}
+
 void GroupNode::createVBOs() {
 
   if (models.size() == 0) {
@@ -96,9 +113,11 @@ void GroupNode::createVBOs() {
   n_models = models.size();
   model_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
   normal_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
+  normal_line_vbos = (GLuint *)malloc(n_models * sizeof(GLuint));
   model_sizes = (size_t *)malloc(n_models * sizeof(size_t));
   glGenBuffers(n_models, model_vbos);
   glGenBuffers(n_models, normal_vbos);
+  glGenBuffers(n_models, normal_line_vbos);
 
   for(int i = 0; i < n_models; i++) {
     ParsedModel model = parse3dFile(models[i]);
@@ -109,6 +128,9 @@ void GroupNode::createVBOs() {
     vector<Point> normal = model.getNormals();
     glBindBuffer(GL_ARRAY_BUFFER, normal_vbos[i]);
     glBufferData(GL_ARRAY_BUFFER, normal.size() * sizeof(Point), &(normal[0]), GL_STATIC_DRAW);
+    vector<Point> normal_lines = createNormalLineVector(normal, position, position.size());
+    glBindBuffer(GL_ARRAY_BUFFER, normal_line_vbos[i]);
+    glBufferData(GL_ARRAY_BUFFER, normal_lines.size() * sizeof(Point), &(normal_lines[0]), GL_STATIC_DRAW);
   }
 }
 

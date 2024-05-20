@@ -23,7 +23,7 @@ private:
   int n_models;
   vector<Color *> color;
 
-  void drawModels();
+  void drawModels(bool debugNormals);
   void createVBOs();
   void applyColor();
 
@@ -31,7 +31,7 @@ public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
             vector<string *> &_models, vector<Color *> _color);
   GroupNode();
-  void draw();
+  void draw(bool debugNormals);
 
   void initializeVBOs();
 

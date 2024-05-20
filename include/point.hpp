@@ -9,7 +9,6 @@ class Point {
 
         Point(float x, float y, float z);
         Point();
-        Point operator+(const Point& other) const;
         float x() const;
         float y() const;
         float z() const;

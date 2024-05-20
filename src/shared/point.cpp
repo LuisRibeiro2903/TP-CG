@@ -7,8 +7,11 @@ Point::Point()
     _z = 0;
 }
 
-Point operator+(const Point& other) const {
-    return Point(_x + other._x, _y + other._y, _z + other._z);
+Point::Point(float x, float y, float z)
+{
+    _x = x;
+    _y = y;
+    _z = z;
 }
 
 float Point::x() const

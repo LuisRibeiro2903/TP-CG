@@ -70,15 +70,18 @@ GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
 
 GroupNode::GroupNode()  {  }
 
-void GroupNode::drawModels() {
+void GroupNode::drawModels(bool debugNormals) {
 
   for (int i = 0; i < n_models; i++) {
-    glDisable(GL_LIGHTING);
-    glColor3f(1, 0, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, normal_line_vbos[i]);
-    glVertexPointer(3, GL_FLOAT, 0, 0);
-    glDrawArrays(GL_LINES, 0, model_sizes[i])
-    glEnable(GL_LIGHTING);
+    if (debugNormals){
+      glDisable(GL_LIGHTING);
+      glColor3f(1, 0, 0);
+      glBindBuffer(GL_ARRAY_BUFFER, normal_line_vbos[i]);
+      glVertexPointer(3, GL_FLOAT, 0, 0);
+      glDrawArrays(GL_LINES, 0, model_sizes[i] * 2);
+      glEnable(GL_LIGHTING);
+
+    }
     glMaterialfv(GL_FRONT, GL_DIFFUSE, color[i]->diffuse);
     glMaterialfv(GL_FRONT, GL_SPECULAR, color[i]->specular);
     glMaterialfv(GL_FRONT, GL_AMBIENT, color[i]->ambient);
@@ -99,7 +102,7 @@ vector<Point> createNormalLineVector(vector<Point> normals, vector<Point> vertic
     Point p = vertices[i];
     Point n = normals[i];
     normal_lines.push_back(p);
-    normal_lines.push_back(p + n);
+    normal_lines.emplace_back(p.x() + n.x(), p.y() + n.y(), p.z() + n.z());
   }
   return normal_lines;
 }
@@ -145,7 +148,7 @@ void GroupNode::applyColor() {
   
 }
 
-void GroupNode::draw() {
+void GroupNode::draw(bool debugNormals) {
   glPushMatrix();
 
 
@@ -154,10 +157,10 @@ void GroupNode::draw() {
   }
 
 
-  this->drawModels();
+  this->drawModels(debugNormals);
 
   for (GroupNode * node : sub_nodes) {
-    node->draw();
+    node->draw(debugNormals);
   }
 
   glPopMatrix();

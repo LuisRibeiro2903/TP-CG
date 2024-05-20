@@ -1,6 +1,7 @@
 #ifndef LIGHT_HPP
 #define LIGHT_HPP
 
+#include <GL/glew.h>
 
 class Light {
     protected:

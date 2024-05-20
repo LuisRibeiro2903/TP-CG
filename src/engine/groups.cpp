@@ -24,7 +24,7 @@ ParsedModel parse3dFile(string * model) {
   ifstream file(*model);
 
   if (!file.is_open()) {
-    cerr << "Error: file not found" << endl;
+    cerr << "Error: file not found: " << *model << endl;
     exit(1);
   }
 

@@ -2,11 +2,12 @@
 #define GROUPS
 
 #include "engine/transform/transform.hpp"
-#include "engine/color.hpp"
+#include "model.hpp"
+#include "parsedModel.hpp"
 #include <GL/glew.h>
+#include <array>
 #include <string>
 #include <vector>
-#include <array>
 
 using std::vector, std::string, std::array;
 
@@ -14,32 +15,16 @@ class GroupNode {
 private:
   vector<GroupNode *> sub_nodes;
   vector<Transform *> transforms;
-  //TODO: Modificar para uma estrutura de dados sobre um modelo, e aqui guardar um array/vector/pointer de modelos
-  vector<string *> models;
-  GLuint * model_vbos;
-  GLuint * normal_vbos;
-  GLuint * texture_vbos;
-  size_t * model_sizes;
-  int n_models;
-  Color ** color;
-
-  void drawModels();
-  void createVBOs();
-  void applyColor();
+  vector<Model *> models;
 
 public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
-            vector<string *> &_models, Color *_color);
+            vector<Model *> &_models);
   GroupNode();
   void draw();
-
-  void initializeVBOs();
-
-
   void addTransform(Transform *transform);
-  void addModel(string *model);
+  void addModel(Model *m);
   void addSubNode(GroupNode *node);
-  void addColor(Color *color);
 };
 
 #endif

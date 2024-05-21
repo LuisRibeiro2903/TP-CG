@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
+#include "engine/lights/light.hpp"
 #include "groups.hpp"
 #include "point.hpp"
-#include "engine/lights/light.hpp"
 
 using std::vector, std::string;
 
@@ -19,16 +19,15 @@ public:
   std::array<float, 3> projection;
   vector<Light *> lights;
   int n_lights;
-  GroupNode * rootGroup;
+  GroupNode *rootGroup;
 
   ParsedWorld(std::array<Point, 3> &lookAt, std::array<float, 3> &projection,
-              int windowWidth, int windowHeight, GroupNode * rootGroup, vector<Light *> lights, int n_lights);
+              int windowWidth, int windowHeight, GroupNode *rootGroup,
+              vector<Light *> lights, int n_lights);
 
   ParsedWorld(const char *filename);
 };
 
-vector<vector<Point>> parse3dFile(vector<string> models);
-
-ParsedWorld * worldParser(const char *filename);
+ParsedWorld *worldParser(const char *filename);
 
 #endif

@@ -3,9 +3,10 @@
 
 #include "point.hpp"
 #include <GL/glew.h>
+#include <string>
 #include <vector>
 
-using namespace std;
+using std::vector, std::string;
 
 class ParsedModel {
 
@@ -13,17 +14,15 @@ private:
   vector<Point> vertex;
   vector<Point> normals;
   vector<Point> textures;
-  // NOTE: Samba- ns se isto faz sentido exisitir.
-  int size;
 
 public:
   ParsedModel(vector<Point> vertex, vector<Point> normals,
               vector<Point> textures);
+  ParsedModel(string *file_name, bool has_textures);
 
   vector<Point> getVertex();
   vector<Point> getNormals();
   vector<Point> getTextures();
-  int getSize();
 };
 
 #endif

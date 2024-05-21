@@ -2,11 +2,8 @@
 #include "engine/transform/transform.hpp"
 #include "parsedModel.hpp"
 #include "parser.hpp"
-#include "point.hpp"
 #include <engine/color.hpp>
 #include <engine/transform/transform.hpp>
-#include <fstream>
-#include <iostream>
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
@@ -16,44 +13,6 @@
 #endif
 
 using namespace std;
-
-ParsedModel parse3dFile(string *model) {
-  vector<Point> vertices;
-  vector<Point> normals;
-  vector<Point> textures;
-
-  ifstream file(*model);
-
-  if (!file.is_open()) {
-    cerr << "Error: file not found: " << *model << endl;
-    exit(1);
-  }
-
-  int n_vertices;
-  file >> n_vertices;
-  for (int i = 0; i < n_vertices; i++) {
-    float x, y, z;
-    char comma;
-    file >> x >> comma >> y >> comma >> z;
-    vertices.emplace_back(x, y, z);
-  }
-  for (int i = 0; i < n_vertices; i++) {
-    float x, y, z;
-    char comma;
-    file >> x >> comma >> y >> comma >> z;
-    normals.emplace_back(x, y, z);
-  }
-  for (int i = 0; i < n_vertices; i++) {
-    float x, y, z;
-    char comma;
-    file >> x >> comma >> y >> comma >> z;
-    textures.emplace_back(x, y, z);
-  }
-
-  file.close();
-
-  return ParsedModel(vertices, normals, textures);
-}
 
 void GroupNode::addTransform(Transform *transform) {
   transforms.push_back(transform);

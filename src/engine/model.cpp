@@ -17,20 +17,23 @@ tuple<GLuint, GLuint, GLuint> Model::createVBOS() {
   glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(Point), normals.data(),
                GL_STATIC_DRAW);
 
-  glGenBuffers(1, &vboTexture);
-  glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
-  glBufferData(GL_ARRAY_BUFFER, texture.size() * sizeof(Point), texture.data(),
-               GL_STATIC_DRAW);
+  if (texture.size() > 0) {
+    glGenBuffers(1, &vboTexture);
+    glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
+    glBufferData(GL_ARRAY_BUFFER, texture.size() * sizeof(Point),
+                 texture.data(), GL_STATIC_DRAW);
+  }
 
   return make_tuple(vboModel, vboNormals, vboTexture);
 }
 
-Model::Model(vector<Point> &_model, vector<Point> &_normals,
-             vector<Point> &_texture, Color &_color)
-    : model(_model), normals(_normals), texture(_texture), color(_color) {
+Model::Model(vector<Point> *_model, vector<Point> *_normals,
+             vector<Point> *_texture, Color *_color)
+    : model(*_model), normals(*_normals), texture(*_texture), color(*_color) {
   vbos = createVBOS();
 }
 
+// TODO: Falta a parte em que se aplica a textura em si acredito eu
 void Model::draw() {
   auto [vboModel, vboNormals, vboTexture] = vbos;
 
@@ -42,21 +45,20 @@ void Model::draw() {
   glBindBuffer(GL_ARRAY_BUFFER, vboNormals);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Point), (void *)0);
 
-  glEnableVertexAttribArray(2);
-  glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
-  glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Point), (void *)0);
+  if (texture.size() > 0) {
+    glEnableVertexAttribArray(2);
+    glBindBuffer(GL_ARRAY_BUFFER, vboTexture);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Point), (void *)0);
+  }
 
-  // Set up material properties using color
   glMaterialfv(GL_FRONT, GL_DIFFUSE, color.diffuse);
   glMaterialfv(GL_FRONT, GL_SPECULAR, color.specular);
   glMaterialfv(GL_FRONT, GL_AMBIENT, color.ambient);
   glMaterialfv(GL_FRONT, GL_EMISSION, color.emissive);
   glMateriali(GL_FRONT, GL_SHININESS, color.shininess);
 
-  // Draw the model
   glDrawArrays(GL_TRIANGLES, 0, model.size());
 
-  // Disable vertex attribute arrays
   glDisableVertexAttribArray(0);
   glDisableVertexAttribArray(1);
   glDisableVertexAttribArray(2);
@@ -66,5 +68,6 @@ Model::~Model() {
   auto [vboModel, vboNormals, vboTexture] = vbos;
   glDeleteBuffers(1, &vboModel);
   glDeleteBuffers(1, &vboNormals);
-  glDeleteBuffers(1, &vboTexture);
+  if (texture.size() > 0)
+    glDeleteBuffers(1, &vboTexture);
 }

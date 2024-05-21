@@ -2,7 +2,7 @@
 #include "point.hpp"
 #include <vector>
 
-using namespace std;
+using std::vector;
 
 ParsedModel generatePlane(float length, int divisions) {
   vector<Point> vertices;
@@ -31,22 +31,22 @@ ParsedModel generatePlane(float length, int divisions) {
       // Add vertices for the two triangles in the square
       vertices.emplace_back(x0, 0.0f, z0);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x0_tex, y0_tex);
+      textures.emplace_back(x0_tex, y0_tex, 0);
       vertices.emplace_back(x1, 0.0f, z1);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x1_tex, y1_tex);
+      textures.emplace_back(x1_tex, y1_tex, 0);
       vertices.emplace_back(x1, 0.0f, z0);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x1_tex, y0_tex);
+      textures.emplace_back(x1_tex, y0_tex, 0);
       vertices.emplace_back(x0, 0.0f, z0);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x0_tex, y0_tex);
+      textures.emplace_back(x0_tex, y0_tex, 0);
       vertices.emplace_back(x0, 0.0f, z1);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x0_tex, y1_tex);
+      textures.emplace_back(x0_tex, y1_tex, 0);
       vertices.emplace_back(x1, 0.0f, z1);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x1_tex, y1_tex);
+      textures.emplace_back(x1_tex, y1_tex, 0);
     }
   }
 

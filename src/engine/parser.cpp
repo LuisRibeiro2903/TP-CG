@@ -9,8 +9,9 @@
 #include "engine/transform/scale.hpp"
 #include "engine/transform/translate.hpp"
 #include "groups.hpp"
+#include "model.hpp"
+#include "parsedModel.hpp"
 #include "tinyxml2.h"
-#include <fstream>
 #include <iostream>
 #include <tuple>
 
@@ -21,29 +22,6 @@ ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
     : lookAt(lookAt), projection(projection), windowWidth(windowWidth),
       windowHeight(windowHeight), rootGroup(rootGroup), lights(lights),
       n_lights(n_lights) {}
-
-vector<vector<Point>> parse3dFile(vector<string> models) {
-  vector<vector<Point>> all_vertices;
-  for (string model : models) {
-    vector<Point> vertices;
-    std::ifstream file(model);
-    if (!file.is_open()) {
-      std::cerr << "Error: file not found" << std::endl;
-      exit(1);
-    }
-    int n_vertices;
-    file >> n_vertices;
-    for (int i = 0; i < n_vertices; i++) {
-      float x, y, z;
-      char comma;
-      file >> x >> comma >> y >> comma >> z;
-      vertices.push_back(Point(x, y, z));
-    }
-    all_vertices.push_back(vertices);
-    file.close();
-  }
-  return all_vertices;
-}
 
 GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement);
 
@@ -259,11 +237,11 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
   if (modelsElement) {
     // TODO: One color for each model
     vector<Color *> colors;
+    Color *c;
     for (tinyxml2::XMLElement *model =
              modelsElement->FirstChildElement("model");
          model != nullptr; model = model->NextSiblingElement("model")) {
       const char *file = model->Attribute("file");
-      group->addModel(new string(file));
       tinyxml2::XMLElement *colorElement = model->FirstChildElement("color");
       if (colorElement) {
         std::tuple<int, int, int> diffuse = std::make_tuple(200, 200, 200);
@@ -312,12 +290,21 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
         if (shininessElement) {
           shininessElement->QueryIntAttribute("value", &shininess);
         }
-        colors.push_back(
-            new Color(diffuse, specular, ambient, emissive, shininess));
+        c = new Color(diffuse, specular, ambient, emissive, shininess);
       } else {
-        colors.push_back(new Color());
+        c = new Color();
       }
-      group->addColor(colors);
+
+      // TODO: Ceckar se existe elemento de texturas e mandar para o construtor
+      // do ParsedModel
+      // NOTE: samba - ns o que isto faz/ e suposto fazer
+      colors.push_back(c);
+
+      ParsedModel *m = new ParsedModel(new string(file), has_textures);
+      vector<Point> vertx = m->getVertex();
+      vector<Point> norm = m->getNormals();
+      vector<Point> tex = m->getTextures();
+      group->addModel(new Model(&vertx, &norm, &tex, c));
     }
   }
 

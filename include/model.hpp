@@ -18,8 +18,8 @@ private:
   tuple<GLuint, GLuint, GLuint> createVBOS();
 
 public:
-  Model(vector<Point> &_model, vector<Point> &_normals, vector<Point> &_texture,
-        Color &_color);
+  Model(vector<Point> *_model, vector<Point> *_normals, vector<Point> *_texture,
+        Color *_color);
 
   vector<Point> getModel() { return model; }
   vector<Point> getNormals() { return normals; }

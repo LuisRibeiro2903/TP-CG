@@ -3,6 +3,7 @@
 
 #include "engine/transform/transform.hpp"
 #include "model.hpp"
+#include "parsedModel.hpp"
 #include <GL/glew.h>
 #include <array>
 #include <string>

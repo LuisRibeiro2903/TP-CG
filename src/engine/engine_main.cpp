@@ -216,6 +216,7 @@ int main(int argc, char **argv) {
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(world->windowWidth, world->windowHeight);
+  // TODO: Ouvi dizer que era para alterar isto :(
   glutCreateWindow("CONIG-COIN");
   glutDisplayFunc(renderScene);
   glutIdleFunc(renderScene);

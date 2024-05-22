@@ -101,11 +101,11 @@ void Model::draw() {
     glBindTexture(GL_TEXTURE_2D, texID);
   }
 
-  /* glMaterialfv(GL_FRONT, GL_DIFFUSE, color.diffuse);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, color.diffuse);
   glMaterialfv(GL_FRONT, GL_SPECULAR, color.specular);
   glMaterialfv(GL_FRONT, GL_AMBIENT, color.ambient);
   glMaterialfv(GL_FRONT, GL_EMISSION, color.emissive);
-  glMateriali(GL_FRONT, GL_SHININESS, color.shininess);  */
+  glMateriali(GL_FRONT, GL_SHININESS, color.shininess);
 
   glBindBuffer(GL_ARRAY_BUFFER, vboModel);
   glVertexPointer(3, GL_FLOAT, 0, 0);

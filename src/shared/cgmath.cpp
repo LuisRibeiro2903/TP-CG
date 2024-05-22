@@ -16,6 +16,12 @@ void cross(float *a, float *b, float *res) {
 	res[2] = a[0]*b[1] - a[1]*b[0];
 }
 
+void cross(Point a, Point b, Point& res) {
+
+    res.setX(a.y()*b.z() - a.z()*b.y());
+    res.setY(a.z()*b.x() - a.x()*b.z());
+    res.setZ(a.x()*b.y() - a.y()*b.x());
+}
 
 void normalize(float *a) {
 

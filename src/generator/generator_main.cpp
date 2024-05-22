@@ -121,7 +121,7 @@ int main(int argc, char *argv[]) {
       return 1;
     }
     std::string patch_file = argv[2];
-    float tesselation_level = std::stof(argv[3]);
+    int tesselation_level = std::stoi(argv[3]);
     std::string output_file_name = argv[4];
     write3dFile(generatePatch(patch_file, tesselation_level), output_file_name);
 

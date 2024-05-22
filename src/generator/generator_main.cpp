@@ -16,6 +16,10 @@ void write3dFile(ParsedModel model, std::string output_file_name) {
   for (Point normal : normals) {
     file << normal.x() << "," << normal.y() << "," << normal.z() << std::endl;
   }
+  std::vector<Point> textures = model.getTextures();
+  for (Point texture : textures) {
+    file << texture.x() << "," << texture.y() << "," << texture.z() << std::endl;
+  }
   file.close();
 }
 

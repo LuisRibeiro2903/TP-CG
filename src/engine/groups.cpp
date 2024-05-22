@@ -28,6 +28,16 @@ GroupNode::GroupNode(vector<GroupNode *> &_sub_nodes,
 
 GroupNode::GroupNode() {}
 
+void GroupNode::initVBOs() {
+  for (Model *m : models) {
+    m->createVBOS();
+  }
+
+  for (GroupNode *node : sub_nodes) {
+    node->initVBOs();
+  }
+}
+
 void GroupNode::draw() {
   glPushMatrix();
 

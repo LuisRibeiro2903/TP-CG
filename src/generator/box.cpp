@@ -26,24 +26,24 @@ void generatePlanesXZ(float dimension, int divisions, vector<Point> &vertices,
       // Lower triangle Top Face - T1
       vertices.emplace_back(x0, halfDimension, z0);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x0_text, y1_text, 0);
+      textures.emplace_back(x0_text, y0_text, 0);
       vertices.emplace_back(x1, halfDimension, z1);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(x1, halfDimension, z0);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x1_text, y1_text, 0);
+      textures.emplace_back(x1_text, y0_text, 0);
 
       // Upper triangle Top Face - T2
       vertices.emplace_back(x0, halfDimension, z1);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x0_text, y1_text, 0);
       vertices.emplace_back(x1, halfDimension, z1);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(x0, halfDimension, z0);
       normals.emplace_back(0, 1, 0);
-      textures.emplace_back(x0_text, y1_text, 0);
+      textures.emplace_back(x0_text, y0_text, 0);
 
       // Lower triangle Bottom Face - T3
       vertices.emplace_back(x0, -halfDimension, z1);
@@ -65,7 +65,7 @@ void generatePlanesXZ(float dimension, int divisions, vector<Point> &vertices,
       textures.emplace_back(x1_text, y0_text, 0);
       vertices.emplace_back(x0, -halfDimension, z1);
       normals.emplace_back(0, -1, 0);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x0_text, y1_text, 0);
     }
   }
 }
@@ -97,7 +97,7 @@ void generatePlanesXY(float dimension, int divisions, vector<Point> &vertices,
       textures.emplace_back(x1_text, y0_text, 0);
       vertices.emplace_back(x1, y1, halfDimension);
       normals.emplace_back(0, 0, 1);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(x0, y1, halfDimension);
       normals.emplace_back(0, 0, 1);
       textures.emplace_back(x0_text, y1_text, 0);
@@ -116,24 +116,24 @@ void generatePlanesXY(float dimension, int divisions, vector<Point> &vertices,
       // Back Upper triangle - T8
       vertices.emplace_back(x1, y1, -halfDimension);
       normals.emplace_back(0, 0, -1);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(x0, y0, -halfDimension);
       normals.emplace_back(0, 0, -1);
       textures.emplace_back(x0_text, y0_text, 0);
       vertices.emplace_back(x0, y1, -halfDimension);
       normals.emplace_back(0, 0, -1);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x0_text, y1_text, 0);
 
       // Back Lower triangle - T7
       vertices.emplace_back(x0, y0, -halfDimension);
       normals.emplace_back(0, 0, -1);
-      textures.emplace_back(x0_text, y1_text, 0);
+      textures.emplace_back(x0_text, y0_text, 0);
       vertices.emplace_back(x1, y1, -halfDimension);
       normals.emplace_back(0, 0, -1);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(x1, y0, -halfDimension);
       normals.emplace_back(0, 0, -1);
-      textures.emplace_back(x1_text, y1_text, 0);
+      textures.emplace_back(x1_text, y0_text, 0);
     }
   }
 }
@@ -162,47 +162,46 @@ void generatePlanesYZ(float dimension, int divisions, vector<Point> &vertices,
       // Upper triangle Right Face - T9
       vertices.emplace_back(halfDimension, y0, z0);
       normals.emplace_back(1, 0, 0);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x0_text, y0_text, 0);
       vertices.emplace_back(halfDimension, y1, z0);
       normals.emplace_back(1, 0, 0);
-      textures.emplace_back(x1_text, y1_text, 0);
+      textures.emplace_back(x0_text, y1_text, 0);
       vertices.emplace_back(halfDimension, y1, z1);
       normals.emplace_back(1, 0, 0);
-      textures.emplace_back();
-      textures.emplace_back(x0_text, y1_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
 
       // Lower triangle Right Face - T10
       vertices.emplace_back(halfDimension, y0, z0);
       normals.emplace_back(1, 0, 0);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x0_text, y0_text, 0);
       vertices.emplace_back(halfDimension, y1, z1);
       normals.emplace_back(1, 0, 0);
-      textures.emplace_back(x0_text, y1_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(halfDimension, y0, z1);
       normals.emplace_back(1, 0, 0);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x1_text, y0_text, 0);
 
       // Lower triangle Left Face
       vertices.emplace_back(-halfDimension, y0, z0);
       normals.emplace_back(-1, 0, 0);
-      textures.emplace_back(x1_text, y0_text, 0);
+      textures.emplace_back(x0_text, y0_text, 0);
       vertices.emplace_back(-halfDimension, y0, z1);
       normals.emplace_back(-1, 0, 0);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x1_text, y0_text, 0);
       vertices.emplace_back(-halfDimension, y1, z0);
       normals.emplace_back(-1, 0, 0);
-      textures.emplace_back(x1_text, y1_text, 0);
+      textures.emplace_back(x0_text, y1_text, 0);
 
       // Upper triangle Left Face
       vertices.emplace_back(-halfDimension, y1, z1);
       normals.emplace_back(-1, 0, 0);
-      textures.emplace_back(x0_text, y1_text, 0);
+      textures.emplace_back(x1_text, y1_text, 0);
       vertices.emplace_back(-halfDimension, y1, z0);
       normals.emplace_back(-1, 0, 0);
-      textures.emplace_back(x1_text, y1_text, 0);
+      textures.emplace_back(x0_text, y1_text, 0);
       vertices.emplace_back(-halfDimension, y0, z1);
       normals.emplace_back(-1, 0, 0);
-      textures.emplace_back(x0_text, y0_text, 0);
+      textures.emplace_back(x1_text, y0_text, 0);
     }
   }
 }

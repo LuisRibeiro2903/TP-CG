@@ -9,6 +9,7 @@
 #include "engine/transform/scale.hpp"
 #include "engine/transform/translate.hpp"
 #include "groups.hpp"
+#include <IL/il.h>
 #include "model.hpp"
 #include "parsedModel.hpp"
 #include "tinyxml2.h"
@@ -24,6 +25,7 @@ ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
       n_lights(n_lights) {}
 
 GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement);
+
 
 ParsedWorld *worldParser(const char *filename) {
 
@@ -231,6 +233,8 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
     }
   }
 
+  
+
   // TODO: Finalizar
   tinyxml2::XMLElement *modelsElement =
       groupElement->FirstChildElement("models");
@@ -294,17 +298,24 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
       } else {
         c = new Color();
       }
+      string * texture = nullptr;
+      bool has_textures = false;
+      tinyxml2::XMLElement *textureElement = model->FirstChildElement("texture");
+      if (textureElement) {
+        has_textures = true;
+        const char *file = textureElement->Attribute("file");
+        texture = new string(file);
+      }
 
-      // TODO: Ceckar se existe elemento de texturas e mandar para o construtor
-      // do ParsedModel
-      // NOTE: samba - ns o que isto faz/ e suposto fazer
       colors.push_back(c);
+      
 
       ParsedModel *m = new ParsedModel(new string(file), has_textures);
+      
       vector<Point> vertx = m->getVertex();
       vector<Point> norm = m->getNormals();
       vector<Point> tex = m->getTextures();
-      group->addModel(new Model(&vertx, &norm, &tex, c));
+      group->addModel(new Model(vertx, norm, tex, c, texture));
     }
   }
 

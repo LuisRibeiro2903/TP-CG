@@ -92,8 +92,7 @@ void renderScene(void) {
     glEnd();
   }
 
-  // Set the color to white by default
-  glColor3f(1.0f, 1.0f, 1.0f);
+
   glEnable(GL_LIGHTING);
 
   // Draw the lights
@@ -228,17 +227,20 @@ int main(int argc, char **argv) {
   glewInit();
 #endif
 
-  initializeLights();
-
-  // We only obtain the window width and height after parsing the file
-
   //  OpenGL settings
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_LIGHTING);
+  glEnable(GL_TEXTURE_2D);
   glEnable(GL_RESCALE_NORMAL);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
+
+  // We only obtain the window width and height after parsing the file
+  world->rootGroup->initVBOs();
+  initializeLights();
+
 
   // enter GLUT's main cycle
   glutMainLoop();

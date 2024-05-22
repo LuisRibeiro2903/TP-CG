@@ -22,6 +22,7 @@ public:
             vector<Model *> &_models);
   GroupNode();
   void draw();
+  void initVBOs();
   void addTransform(Transform *transform);
   void addModel(Model *m);
   void addSubNode(GroupNode *node);

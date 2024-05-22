@@ -41,7 +41,8 @@ ParsedModel generateCylinder(float radius, float height, int sides) {
   for (int i = 1; i <= sides; i++) {
     next_x = cos(i * step) * radius;
     next_x_normal = cos(i * step);
-    next_x_texture_side = next_z = -sin(i * step) * radius;
+    next_x_texture_side = i * step_tex_hor;
+    next_z = -sin(i * step) * radius;
     next_z_normal = -sin(i * step);
     next_x_text = 0.4375f + (cos(i * step) * 0.1875f);
     next_y_text = 0.1875 + (sin(i * step) * 0.1875f);

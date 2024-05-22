@@ -3,9 +3,10 @@
 
 #include "engine/color.hpp"
 #include "point.hpp"
+#include <string>
 #include <vector>
 
-using std::vector;
+using std::vector, std::string;
 
 class Model {
 private:
@@ -14,13 +15,12 @@ private:
   vector<Point> texture;
   tuple<GLuint, GLuint, GLuint> vbos;
   Color color;
-  string * texPath;
+  string *texPath;
   int texID;
-
 
 public:
   Model(vector<Point> _model, vector<Point> _normals, vector<Point> _texture,
-        Color *_color, string * texPath);
+        Color *_color, string *texPath);
 
   void createVBOS();
   vector<Point> getModel() { return model; }

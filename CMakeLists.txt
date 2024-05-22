@@ -27,7 +27,8 @@ set_target_properties(generator PROPERTIES
     CXX_STANDARD 17
     CXX_STANDARD_REQUIRED YES
     CXX_EXTENSIONS NO)
-    
+
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS} include)
 link_directories(${OpenGL_LIBRARY_DIRS})

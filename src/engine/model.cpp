@@ -54,6 +54,29 @@ vector<Point> Model::createNormalLineVector() {
   return normal_lines;
 }
 
+void Model::setBoundingBox() {
+  Point min = model[0];
+  Point max = model[0];
+  for (Point p : model) {
+    if (p.x() < min.x())
+      min.setX(p.x());
+    if (p.y() < min.y())
+      min.setY(p.y());
+    if (p.z() < min.z())
+      min.setZ(p.z());
+
+    if (p.x() > max.x())
+      max.setX(p.x());
+    if (p.y() > max.y())
+      max.setY(p.y());
+    if (p.z() > max.z())
+      max.setZ(p.z());
+  }
+
+  this->box = AABox(min, max.x() - min.x(), max.y() - min.y(), max.z() - min.z());
+
+}
+
 void Model::createVBOS() {
   GLuint vboModel, vboNormals, vboTexture, vboNormalLines;
   glGenBuffers(1, &vboModel);
@@ -107,7 +130,10 @@ void Model::createVBOS() {
     }
     glBufferData(GL_ARRAY_BUFFER, texture_tmp.size() * sizeof(float),
                  texture_tmp.data(), GL_STATIC_DRAW);
+
+    //We also set the bounding box
   }
+  this->setBoundingBox();
 
   vbos = make_tuple(vboModel, vboNormals, vboTexture, vboNormalLines);
 }
@@ -117,7 +143,7 @@ Model::Model(vector<Point> _model, vector<Point> _normals,
     : model(_model), normals(_normals), texture(_texture), color(*_color), texPath(texPath) {}
 
 
-void Model::draw(bool debugNormals) {
+void Model::draw(bool debugNormals, bool debugBoxes) {
   GLuint vboModel, vboNormals, vboTexture, vboNormalLines;
   vboModel = get<0>(vbos);
   vboNormals = get<1>(vbos);
@@ -132,8 +158,10 @@ void Model::draw(bool debugNormals) {
     glVertexPointer(3, GL_FLOAT, 0, 0);
     glDrawArrays(GL_LINES, 0, model.size() * 2);
     glEnable(GL_LIGHTING);
-
   }
+
+  if (debugBoxes) 
+    box.draw();
 
   if (texID != -1) {
     glBindTexture(GL_TEXTURE_2D, texID);

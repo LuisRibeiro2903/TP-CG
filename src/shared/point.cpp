@@ -49,6 +49,14 @@ float * Point::data()
     return new float[3]{_x, _y, _z};
 }
 
+void Point::normalize()
+{
+    float length = sqrt(_x * _x + _y * _y + _z * _z);
+    _x /= length;
+    _y /= length;
+    _z /= length;
+}
+
 void Point::handleIsNan()
 {
     if (std::isnan(_x)) _x = 0;

@@ -9,6 +9,7 @@ using namespace std;
 
 void buildRotMatrix(float *x, float *y, float *z, float *m);
 void cross(float *a, float *b, float *res);
+void cross(Point a, Point b, Point& res);
 void normalize(float *a);
 void normalize(Point& p);
 Point normalize2(Point& p);

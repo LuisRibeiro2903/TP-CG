@@ -25,6 +25,8 @@ float fov, near, far;
 bool wireframe = false;
 bool axis = true;
 bool debugNormals = false;
+bool debugBoxes = false;
+
 ParsedWorld *world;
 
 float time0 = 0;
@@ -99,7 +101,7 @@ void renderScene(void) {
   renderLights();
 
   // draw the scene
-  world->rootGroup->draw(debugNormals);
+  world->rootGroup->draw(debugNormals, debugBoxes);
 
   glutSwapBuffers();
 }
@@ -160,6 +162,10 @@ void handleKeyboard(unsigned char key, int x, int y) {
     }
     case 'n': {
       debugNormals = !debugNormals;
+      break;
+    }
+    case 'b': {
+      debugBoxes = !debugBoxes;
       break;
     }
   }

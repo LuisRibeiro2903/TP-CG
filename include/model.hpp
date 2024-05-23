@@ -4,6 +4,7 @@
 #include "engine/color.hpp"
 #include "point.hpp"
 #include "engine/frustum/AABox.hpp"
+#include "engine/transform/transform.hpp"
 
 #include <string>
 #include <vector>
@@ -33,8 +34,10 @@ public:
   vector<Point> getNormals() { return normals; }
   vector<Point> getTexture() { return texture; }
   Color getColor() { return color; }
+  void updateAABox(Transform &t);
+  void drawAABox();
 
-  void draw(bool debugNormals, bool debugBoxes);
+  void draw(bool debugNormals);
   ~Model();
 };
 

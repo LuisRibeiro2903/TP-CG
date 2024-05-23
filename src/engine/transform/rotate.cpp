@@ -9,3 +9,11 @@ void Rotate::applyTransform()  {
     glRotatef(angle, x, y, z); 
 
 }
+
+void Rotate::applyTransformToAABox(AABox &box) {
+    
+}
+
+void Rotate::applyTransform(float *matrix) {
+    
+}

@@ -38,15 +38,40 @@ void GroupNode::initVBOs() {
   }
 }
 
+void GroupNode::buildTransformationMatrix() {
+
+  //Initialize the matrix with the identity matrix
+  float matrix[16] = {1, 0, 0, 0, 0, 1, 0, 0,
+                      0, 0, 1, 0, 0, 0, 0, 1};
+
+  //Apply the transformations to the matrix
+  for (Transform *t : transforms) {
+    t->applyTransform(matrix);
+  }
+
+  glMultMatrixf(matrix);
+}
+
 void GroupNode::draw(bool debugNormals, bool debugBoxes) {
   glPushMatrix();
 
-  for (Transform *t : transforms) {
+  buildTransformationMatrix();
+
+  /* for (Transform *t : transforms) 
+    for (Model *m : models) 
+      m->updateAABox(*t);  
+
+  if (debugBoxes) {
+    for (Model *m : models) {
+      m->drawAABox();
+    }
+  } 
+  for (Transform *t : transforms)
     t->applyTransform();
-  }
+  */
 
   for (Model *m : models) {
-    m->draw(debugNormals, debugBoxes);
+    m->draw(debugNormals);
   }
 
   for (GroupNode *node : sub_nodes) {

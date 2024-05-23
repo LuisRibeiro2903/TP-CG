@@ -104,3 +104,11 @@ void CatmullROM::applyTransform() {
 
 }
 
+void CatmullROM::applyTransformToAABox(AABox &box) {
+    
+}
+
+void CatmullROM::applyTransform(float *matrix) {
+    
+}
+

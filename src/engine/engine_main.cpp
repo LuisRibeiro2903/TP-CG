@@ -25,7 +25,7 @@ float fov, near, far;
 bool wireframe = false;
 bool axis = true;
 bool debugNormals = false;
-bool debugBoxes = false;
+bool debugBoxes = true;
 
 ParsedWorld *world;
 

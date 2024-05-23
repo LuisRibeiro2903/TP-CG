@@ -17,6 +17,8 @@ private:
   vector<Transform *> transforms;
   vector<Model *> models;
 
+  void buildTransformationMatrix();
+
 public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
             vector<Model *> &_models);

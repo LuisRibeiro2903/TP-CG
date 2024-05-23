@@ -73,9 +73,7 @@ ParsedModel generatePatch(string &patchfile, int tesselationLevel) {
 
     float texStep = 1.0 / tesselationLevel;
 
-    vector<vector<Point>> patch = patches[0];
-    int i = 0;
-    for (vector<vector<Point>> patch = patches[i]; i < 31; i++, patch = patches[i]){
+    for (auto patch : patches){
         // Pre-calculation for the patch
         auto mp = MP(bezierMatrix, patch);
         auto pmt = PMtranspose(mp, bezierMatrix); // bezierMatrix is simetric, so M = Mt

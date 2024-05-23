@@ -2,6 +2,7 @@
 #define CATMULLROM
 
 #include "engine/transform/transform.hpp"
+#include "engine/frustum/AABox.hpp"
 #include <vector>
 #include <math.h>
 #include "point.hpp"
@@ -27,6 +28,8 @@ private:
 public:
   CatmullROM(vector<Point> points, float time, bool align);
   void applyTransform() override;
+  void applyTransform(float *matrix) override;
+  void applyTransformToAABox(AABox &box) override;
 };
 
 #endif

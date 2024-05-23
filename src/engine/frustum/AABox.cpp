@@ -5,59 +5,50 @@
 
 AABox::AABox(Point &corner, float x, float y, float z)
 {
-    setBox(corner, x, y, z);
+    this->Ocorner = corner;
+    this->Ox = x;
+    this->Oy = y;
+    this->Oz = z;
+    this->efective_corner = corner;
+    this->efective_x = x;
+    this->efective_y = y;
+    this->efective_z = z;
 }
 
 AABox::AABox()
 {
-    corner = Point();
-    x = 1.0f;
-    y = 1.0f;
-    z = 1.0f;
+    Ocorner = Point();
+    Ox = 1.0f;
+    Oy = 1.0f;
+    Oz = 1.0f;
+    efective_corner = Ocorner;
+    efective_x = Ox;
+    efective_y = Oy;
+    efective_z = Oz;
 }
 
 AABox::~AABox()
 {
 }
 
-void AABox::setBox(Point &corner, float x, float y, float z)
-{
-    this->corner = corner;
-    
-    if (x < 0) {
-        x = -x;
-        corner.setX(corner.x() - x);
-    }
-    if (y < 0) {
-        y = -y;
-        corner.setY(corner.y() - y);
-    }
-    if (z < 0) {
-        z = -z;
-        corner.setZ(corner.z() - z);
-    }
-    this->x = x;
-    this->y = y;
-    this->z = z;
-}
 
 
 Point AABox::getVertexP(const Point &normal)
 {
-    Point res = corner;
-    if (normal.x() > 0) res.setX(res.x() + x);
-    if (normal.y() > 0) res.setY(res.y() + y);
-    if (normal.z() > 0) res.setZ(res.z() + z);
+    Point res = efective_corner;
+    if (normal.x() > 0) res.setX(res.x() + efective_x);
+    if (normal.y() > 0) res.setY(res.y() + efective_y);
+    if (normal.z() > 0) res.setZ(res.z() + efective_z);
 
     return res;
 }
 
 Point AABox::getVertexN(const Point &normal)
 {
-    Point res = corner;
-    if (normal.x() < 0) res.setX(res.x() + x);
-    if (normal.y() < 0) res.setY(res.y() + y);
-    if (normal.z() < 0) res.setZ(res.z() + z);
+    Point res = efective_corner;
+    if (normal.x() < 0) res.setX(res.x() + efective_x);
+    if (normal.y() < 0) res.setY(res.y() + efective_y);
+    if (normal.z() < 0) res.setZ(res.z() + efective_z);
 
     return res;
 }
@@ -65,14 +56,14 @@ Point AABox::getVertexN(const Point &normal)
 std::vector<Point> AABox::generateVertices()
 {
     std::vector<Point> res;
-    res.push_back(corner);
-    res.push_back(Point(corner.x() + x, corner.y(), corner.z()));
-    res.push_back(Point(corner.x() + x, corner.y() + y, corner.z()));
-    res.push_back(Point(corner.x(), corner.y() + y, corner.z()));
-    res.push_back(Point(corner.x(), corner.y(), corner.z() + z));
-    res.push_back(Point(corner.x() + x, corner.y(), corner.z() + z));
-    res.push_back(Point(corner.x() + x, corner.y() + y, corner.z() + z));
-    res.push_back(Point(corner.x(), corner.y() + y, corner.z() + z));
+    res.push_back(efective_corner);
+    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y(), efective_corner.z()));
+    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y() + efective_y, efective_corner.z()));
+    res.push_back(Point(efective_corner.x(), efective_corner.y() + efective_y, efective_corner.z()));
+    res.push_back(Point(efective_corner.x(), efective_corner.y(), efective_corner.z() + efective_z));
+    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y(), efective_corner.z() + efective_z));
+    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y() + efective_y, efective_corner.z() + efective_z));
+    res.push_back(Point(efective_corner.x(), efective_corner.y() + efective_y, efective_corner.z() + efective_z));
 
     return res;
 }
@@ -97,4 +88,19 @@ void AABox::draw()
     }
     glEnd();
     glEnable(GL_LIGHTING);
+}
+
+void AABox::translate(float x, float y, float z)
+{
+    efective_corner.setX(Ocorner.x() + x);
+    efective_corner.setY(Ocorner.y() + y);
+    efective_corner.setZ(Ocorner.z() + z);
+}
+
+void AABox::scale(float x, float y, float z)
+{
+    efective_corner = Ocorner * Point(x, y, z);
+    efective_x = Ox * x;
+    efective_y = Oy * y;
+    efective_z = Oz * z;
 }

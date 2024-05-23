@@ -143,7 +143,15 @@ Model::Model(vector<Point> _model, vector<Point> _normals,
     : model(_model), normals(_normals), texture(_texture), color(*_color), texPath(texPath) {}
 
 
-void Model::draw(bool debugNormals, bool debugBoxes) {
+void Model::updateAABox(Transform &t) {
+  t.applyTransformToAABox(box);
+}
+
+void Model::drawAABox() {
+  box.draw();
+}
+
+void Model::draw(bool debugNormals) {
   GLuint vboModel, vboNormals, vboTexture, vboNormalLines;
   vboModel = get<0>(vbos);
   vboNormals = get<1>(vbos);
@@ -159,9 +167,6 @@ void Model::draw(bool debugNormals, bool debugBoxes) {
     glDrawArrays(GL_LINES, 0, model.size() * 2);
     glEnable(GL_LIGHTING);
   }
-
-  if (debugBoxes) 
-    box.draw();
 
   if (texID != -1) {
     glBindTexture(GL_TEXTURE_2D, texID);

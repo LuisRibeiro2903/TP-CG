@@ -35,6 +35,10 @@ class Point {
             return Point(_x * f, _y * f, _z * f);
         }
 
+        Point operator*(const Point &p) const {
+            return Point(_x * p.x(), _y * p.y(), _z * p.z());
+        }
+
         Point operator/(const float &f) const {
             return Point(_x / f, _y / f, _z / f);
         }

@@ -24,7 +24,7 @@ float fov, near, far;
 
 bool wireframe = false;
 bool axis = true;
-
+bool debugNormals = false;
 ParsedWorld *world;
 
 float time0 = 0;
@@ -58,7 +58,6 @@ void renderLights() {
   for (int i = 0; i < world->n_lights; i++) {
     world->lights[i]->applyLight();
   }
-
 }
 
 void renderScene(void) {
@@ -75,8 +74,7 @@ void renderScene(void) {
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
   glDisable(GL_LIGHTING);
-  if (axis)
-  {
+  if (axis) {
     // Draw axis
     glBegin(GL_LINES);
     // X axis in red
@@ -94,15 +92,14 @@ void renderScene(void) {
     glEnd();
   }
 
-  // Set the color to white by default
-  glColor3f(1.0f, 1.0f, 1.0f);
+
   glEnable(GL_LIGHTING);
 
   // Draw the lights
   renderLights();
 
   // draw the scene
-  world->rootGroup->draw();
+  world->rootGroup->draw(debugNormals);
 
   glutSwapBuffers();
 }
@@ -111,7 +108,6 @@ void updatePos() {
   camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
   camY = cam_radius * sin(cam_beta);
   camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
-
 }
 
 void handleSpecialKeys(int key, int x, int y) {
@@ -135,23 +131,23 @@ void handleKeyboard(unsigned char key, int x, int y) {
     case 'w': {
       if (cam_beta < 1.5f)
         cam_beta += ANGLE_STEP;
-    
+
       break;
     }
     case 's': {
       if (cam_beta > -1.5f)
         cam_beta -= ANGLE_STEP;
-    
+
       break;
     }
     case 'a': {
       cam_alpha -= ANGLE_STEP;
-  
+
       break;
     }
     case 'd': {
       cam_alpha += ANGLE_STEP;
-  
+
       break;
     }
     case 'p': {
@@ -162,6 +158,10 @@ void handleKeyboard(unsigned char key, int x, int y) {
       axis = !axis;
       break;
     }
+    case 'n': {
+      debugNormals = !debugNormals;
+      break;
+    }
   }
   updatePos();
 }
@@ -169,9 +169,10 @@ void handleKeyboard(unsigned char key, int x, int y) {
 void initializeLights() {
   float amb[4] = {1.0f, 1.0f, 1.0f, 1.0f};
   glLightModelfv(GL_LIGHT_MODEL_AMBIENT, amb);
-  if(world->n_lights > 0) {
-    if(world->n_lights > 8) {
-      std::cerr << "Too many lights, only the first 8 will be used" << std::endl;
+  if (world->n_lights > 0) {
+    if (world->n_lights > 8) {
+      std::cerr << "Too many lights, only the first 8 will be used"
+                << std::endl;
       world->n_lights = 8;
     }
     for (int i = 0; i < world->n_lights; i++) {
@@ -218,6 +219,7 @@ int main(int argc, char **argv) {
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(world->windowWidth, world->windowHeight);
+  // TODO: Ouvi dizer que era para alterar isto :(
   glutCreateWindow("CONIG-COIN");
   glutDisplayFunc(renderScene);
   glutIdleFunc(renderScene);
@@ -229,18 +231,20 @@ int main(int argc, char **argv) {
   glewInit();
 #endif
 
-  world->rootGroup->initializeVBOs();
-  initializeLights();
-
-  // We only obtain the window width and height after parsing the file
-
   //  OpenGL settings
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_CULL_FACE);
   glEnable(GL_LIGHTING);
+  glEnable(GL_TEXTURE_2D);
   glEnable(GL_RESCALE_NORMAL);
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_NORMAL_ARRAY);
+
+  // We only obtain the window width and height after parsing the file
+  world->rootGroup->initVBOs();
+  initializeLights();
+
 
   // enter GLUT's main cycle
   glutMainLoop();

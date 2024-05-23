@@ -1,6 +1,8 @@
 #ifndef POINT_HPP
 #define POINT_HPP
 
+#include <cmath>
+
 class Point {
     private:
         float _x, _y, _z;
@@ -18,6 +20,7 @@ class Point {
         void setY(float y);
         void setZ(float z);
         float * data();
+        void handleIsNan();
 };
 
 #endif

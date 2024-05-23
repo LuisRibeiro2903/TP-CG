@@ -48,3 +48,10 @@ float * Point::data()
 {
     return new float[3]{_x, _y, _z};
 }
+
+void Point::handleIsNan()
+{
+    if (std::isnan(_x)) _x = 0;
+    if (std::isnan(_y)) _y = 0;
+    if (std::isnan(_z)) _z = 0;
+}

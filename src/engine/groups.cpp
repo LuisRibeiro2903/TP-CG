@@ -38,7 +38,7 @@ void GroupNode::initVBOs() {
   }
 }
 
-void GroupNode::draw() {
+void GroupNode::draw(bool debugNormals) {
   glPushMatrix();
 
   for (Transform *t : transforms) {
@@ -46,11 +46,11 @@ void GroupNode::draw() {
   }
 
   for (Model *m : models) {
-    m->draw();
+    m->draw(debugNormals);
   }
 
   for (GroupNode *node : sub_nodes) {
-    node->draw();
+    node->draw(debugNormals);
   }
 
   glPopMatrix();

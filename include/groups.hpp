@@ -21,7 +21,7 @@ public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
             vector<Model *> &_models);
   GroupNode();
-  void draw();
+  void draw(bool debugNormals);
   void initVBOs();
   void addTransform(Transform *transform);
   void addModel(Model *m);

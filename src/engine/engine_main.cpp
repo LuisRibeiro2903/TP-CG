@@ -24,7 +24,7 @@ float fov, near, far;
 
 bool wireframe = false;
 bool axis = true;
-
+bool debugNormals = false;
 ParsedWorld *world;
 
 float time0 = 0;
@@ -99,7 +99,7 @@ void renderScene(void) {
   renderLights();
 
   // draw the scene
-  world->rootGroup->draw();
+  world->rootGroup->draw(debugNormals);
 
   glutSwapBuffers();
 }
@@ -128,36 +128,40 @@ void handleSpecialKeys(int key, int x, int y) {
 
 void handleKeyboard(unsigned char key, int x, int y) {
   switch (key) {
-  case 'w': {
-    if (cam_beta < 1.5f)
-      cam_beta += ANGLE_STEP;
+    case 'w': {
+      if (cam_beta < 1.5f)
+        cam_beta += ANGLE_STEP;
 
-    break;
-  }
-  case 's': {
-    if (cam_beta > -1.5f)
-      cam_beta -= ANGLE_STEP;
+      break;
+    }
+    case 's': {
+      if (cam_beta > -1.5f)
+        cam_beta -= ANGLE_STEP;
 
-    break;
-  }
-  case 'a': {
-    cam_alpha -= ANGLE_STEP;
+      break;
+    }
+    case 'a': {
+      cam_alpha -= ANGLE_STEP;
 
-    break;
-  }
-  case 'd': {
-    cam_alpha += ANGLE_STEP;
+      break;
+    }
+    case 'd': {
+      cam_alpha += ANGLE_STEP;
 
-    break;
-  }
-  case 'p': {
-    wireframe = !wireframe;
-    break;
-  }
-  case 'l': {
-    axis = !axis;
-    break;
-  }
+      break;
+    }
+    case 'p': {
+      wireframe = !wireframe;
+      break;
+    }
+    case 'l': {
+      axis = !axis;
+      break;
+    }
+    case 'n': {
+      debugNormals = !debugNormals;
+      break;
+    }
   }
   updatePos();
 }

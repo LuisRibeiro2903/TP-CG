@@ -41,8 +41,21 @@ int loadTexture(string s) {
 
 }
 
+vector<Point> Model::createNormalLineVector() {
+  vector<Point> normal_lines;
+  size_t size = model.size();
+  for (int i = 0; i < size; i++)
+  { 
+    Point p = model[i];
+    Point n = normals[i];
+    normal_lines.push_back(p);
+    normal_lines.emplace_back(p.x() + n.x(), p.y() + n.y(), p.z() + n.z());
+  }
+  return normal_lines;
+}
+
 void Model::createVBOS() {
-  GLuint vboModel, vboNormals, vboTexture;
+  GLuint vboModel, vboNormals, vboTexture, vboNormalLines;
   glGenBuffers(1, &vboModel);
   glBindBuffer(GL_ARRAY_BUFFER, vboModel);
   vector<float> model_tmp;
@@ -65,6 +78,20 @@ void Model::createVBOS() {
   glBufferData(GL_ARRAY_BUFFER, normals_tmp.size() * sizeof(float),
                normals_tmp.data(), GL_STATIC_DRAW);
 
+
+
+  glGenBuffers(1, &vboNormalLines);
+  glBindBuffer(GL_ARRAY_BUFFER, vboNormalLines);
+  vector<Point> normal_lines = createNormalLineVector();
+  vector<float> normal_lines_tmp;
+  for (Point p : normal_lines) {
+    normal_lines_tmp.push_back(p.x());
+    normal_lines_tmp.push_back(p.y());
+    normal_lines_tmp.push_back(p.z());
+  }
+  glBufferData(GL_ARRAY_BUFFER, normal_lines_tmp.size() * sizeof(float),
+               normal_lines_tmp.data(), GL_STATIC_DRAW);
+
   if (texPath != nullptr)
     texID = loadTexture(*texPath);
   else
@@ -82,7 +109,7 @@ void Model::createVBOS() {
                  texture_tmp.data(), GL_STATIC_DRAW);
   }
 
-  vbos = make_tuple(vboModel, vboNormals, vboTexture);
+  vbos = make_tuple(vboModel, vboNormals, vboTexture, vboNormalLines);
 }
 
 Model::Model(vector<Point> _model, vector<Point> _normals,
@@ -90,12 +117,23 @@ Model::Model(vector<Point> _model, vector<Point> _normals,
     : model(_model), normals(_normals), texture(_texture), color(*_color), texPath(texPath) {}
 
 
-void Model::draw() {
-  GLuint vboModel, vboNormals, vboTexture;
+void Model::draw(bool debugNormals) {
+  GLuint vboModel, vboNormals, vboTexture, vboNormalLines;
   vboModel = get<0>(vbos);
   vboNormals = get<1>(vbos);
+  vboNormalLines = get<3>(vbos);
   if (texID != -1)
     vboTexture = get<2>(vbos);
+
+  if (debugNormals){
+    glDisable(GL_LIGHTING);
+    glColor3f(1, 0, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, vboNormalLines);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glDrawArrays(GL_LINES, 0, model.size() * 2);
+    glEnable(GL_LIGHTING);
+
+  }
 
   if (texID != -1) {
     glBindTexture(GL_TEXTURE_2D, texID);
@@ -119,18 +157,21 @@ void Model::draw() {
     glTexCoordPointer(2, GL_FLOAT, 0, 0);
   }
 
+
   glDrawArrays(GL_TRIANGLES, 0, model.size());
 
   if (texID != -1) {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
+
 }
 
 Model::~Model() {
-  auto [vboModel, vboNormals, vboTexture] = vbos;
+  auto [vboModel, vboNormals, vboTexture, vboNormalLines] = vbos;
   glDeleteBuffers(1, &vboModel);
   glDeleteBuffers(1, &vboNormals);
   if (texID != -1)
     glDeleteBuffers(1, &vboTexture);
+  glDeleteBuffers(1, &vboNormalLines);
 }

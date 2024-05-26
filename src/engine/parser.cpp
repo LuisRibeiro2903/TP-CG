@@ -13,6 +13,7 @@
 #include "parsedModel.hpp"
 #include "tinyxml2.h"
 #include <iostream>
+#include <string>
 #include <tuple>
 
 ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
@@ -24,6 +25,8 @@ ParsedWorld::ParsedWorld(std::array<Point, 3> &lookAt,
       n_lights(n_lights) {}
 
 GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement);
+
+int modelN = 0;
 
 ParsedWorld *worldParser(const char *filename) {
 
@@ -242,6 +245,14 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
              modelsElement->FirstChildElement("model");
          model != nullptr; model = model->NextSiblingElement("model")) {
       const char *file = model->Attribute("file");
+
+      string *name = nullptr;
+      tinyxml2::XMLElement *nameElement = model->FirstChildElement("name");
+      if (nameElement) {
+        name = new string(nameElement->Attribute("str"));
+      } else {
+        name = new string("Model" + std::to_string(modelN++));
+      }
       tinyxml2::XMLElement *colorElement = model->FirstChildElement("color");
       if (colorElement) {
         std::tuple<int, int, int> diffuse = std::make_tuple(200, 200, 200);
@@ -311,7 +322,7 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
       vector<Point> vertx = m->getVertex();
       vector<Point> norm = m->getNormals();
       vector<Point> tex = m->getTextures();
-      group->addModel(new Model(vertx, norm, tex, c, texture));
+      group->addModel(new Model(vertx, norm, tex, c, texture, name));
     }
   }
 

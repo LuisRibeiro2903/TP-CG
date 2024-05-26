@@ -139,8 +139,8 @@ void Model::createVBOS() {
 }
 
 Model::Model(vector<Point> _model, vector<Point> _normals,
-             vector<Point> _texture, Color *_color, string * texPath)
-    : model(_model), normals(_normals), texture(_texture), color(*_color), texPath(texPath) {}
+             vector<Point> _texture, Color *_color, string * texPath, string * _name)
+    : model(_model), normals(_normals), texture(_texture), color(*_color), texPath(texPath), name(_name) {}
 
 
 
@@ -152,13 +152,17 @@ void Model::resetAABox() {
   box.reset();
 }
 
-void Model::draw(bool debugNormals) {
+bool Model::draw(bool debugNormals, char * nameF) {
   GLuint vboModel, vboNormals, vboTexture, vboNormalLines;
   vboModel = get<0>(vbos);
   vboNormals = get<1>(vbos);
   vboNormalLines = get<3>(vbos);
   if (texID != -1)
     vboTexture = get<2>(vbos);
+  bool fixed = false;
+  if (nameF != nullptr && name != nullptr && *name == nameF) {
+    fixed = true;
+  }
 
   if (debugNormals){
     glDisable(GL_LIGHTING);
@@ -198,6 +202,7 @@ void Model::draw(bool debugNormals) {
     glBindTexture(GL_TEXTURE_2D, 0);
   }
 
+  return fixed;
 
 }
 

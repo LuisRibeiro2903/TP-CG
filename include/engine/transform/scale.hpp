@@ -2,6 +2,7 @@
 #define SCALE
 
 #include "transform.hpp"
+#include "engine/frustum/AABox.hpp"
 #include <GL/gl.h>
 
 class Scale : public Transform {
@@ -11,6 +12,7 @@ private:
 public:
   Scale(float x, float y, float z);
   void applyTransform() override;
+  void applyTransform(float *matrix) override;
 };
 
 #endif

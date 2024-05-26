@@ -21,6 +21,33 @@ class Point {
         void setZ(float z);
         float * data();
         void handleIsNan();
+        void normalize();
+        float innerProduct(Point &p);
+        void copy(Point &p);
+
+        Point operator-(const Point &p) const {
+            return Point(_x - p.x(), _y - p.y(), _z - p.z());
+        }
+
+        Point operator+(const Point &p) const {
+            return Point(_x + p.x(), _y + p.y(), _z + p.z());
+        }
+
+        Point operator*(const float &f) const {
+            return Point(_x * f, _y * f, _z * f);
+        }
+
+        Point operator*(const Point &p) const {
+            return Point(_x * p.x(), _y * p.y(), _z * p.z());
+        }
+
+        Point operator/(const float &f) const {
+            return Point(_x / f, _y / f, _z / f);
+        }
+
+        Point operator-() const {
+            return Point(-_x, -_y, -_z);
+        }
 };
 
 #endif

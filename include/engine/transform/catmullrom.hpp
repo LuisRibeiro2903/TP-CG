@@ -2,6 +2,7 @@
 #define CATMULLROM
 
 #include "engine/transform/transform.hpp"
+#include "engine/frustum/AABox.hpp"
 #include <vector>
 #include <math.h>
 #include "point.hpp"
@@ -22,11 +23,13 @@ private:
     void renderCatmullRomCurve() const;
     void getCatmullRomPoint(float t, Point p0, Point p1, Point p2, Point p3, float *pos, float *deriv) const;
     void alignCatmullRom(float *deriv);
+    void alignCatmullRom(float *deriv, float *matrix_cpy, float *matrix);
     
 
 public:
   CatmullROM(vector<Point> points, float time, bool align);
   void applyTransform() override;
+  void applyTransform(float *matrix) override;
 };
 
 #endif

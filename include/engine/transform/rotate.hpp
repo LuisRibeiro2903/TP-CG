@@ -2,6 +2,7 @@
 #define ROTATE
 
 #include "transform.hpp"
+#include "engine/frustum/AABox.hpp"
 #include <GL/glut.h>
 #include <GL/gl.h>
 
@@ -13,6 +14,7 @@ private:
 public:
   Rotate(float angleOrTime, float x, float y, float z, bool isTime);
   void applyTransform() override;
+  void applyTransform(float *matrix) override;
 };
 
 #endif

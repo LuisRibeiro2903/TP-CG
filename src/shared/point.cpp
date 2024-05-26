@@ -49,9 +49,29 @@ float * Point::data()
     return new float[3]{_x, _y, _z};
 }
 
+void Point::normalize()
+{
+    float length = sqrt(_x * _x + _y * _y + _z * _z);
+    _x /= length;
+    _y /= length;
+    _z /= length;
+}
+
 void Point::handleIsNan()
 {
     if (std::isnan(_x)) _x = 0;
     if (std::isnan(_y)) _y = 0;
     if (std::isnan(_z)) _z = 0;
+}
+
+float Point::innerProduct(Point &p)
+{
+    return (_x * p.x() + _y * p.y() + _z * p.z());
+}
+
+void Point::copy(Point &p)
+{
+    _x = p.x();
+    _y = p.y();
+    _z = p.z();
 }

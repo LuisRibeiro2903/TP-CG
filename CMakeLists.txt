@@ -8,7 +8,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 file(GLOB SOURCES_SHARED "src/shared/*.cpp")
-file(GLOB SOURCES_ENGINE "src/engine/*.cpp" "src/engine/transform/*.cpp" "src/engine/lights/*.cpp")
+file(GLOB SOURCES_ENGINE "src/engine/*.cpp" "src/engine/transform/*.cpp" "src/engine/lights/*.cpp" "src/engine/frustum/*.cpp")
 file(GLOB SOURCES_GENERATOR "src/generator/*.cpp")
 
 set(CMAKE_BUILD_TYPE Debug)

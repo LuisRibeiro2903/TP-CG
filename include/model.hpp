@@ -3,6 +3,9 @@
 
 #include "engine/color.hpp"
 #include "point.hpp"
+#include "engine/frustum/AABox.hpp"
+#include "engine/transform/transform.hpp"
+
 #include <string>
 #include <vector>
 
@@ -14,11 +17,13 @@ private:
   vector<Point> normals;
   vector<Point> texture;
   tuple<GLuint, GLuint, GLuint, GLuint> vbos;
+  AABox box;
   Color color;
   string *texPath;
   int texID;
 
   vector<Point> createNormalLineVector();
+  void setBoundingBox();
 
 public:
   Model(vector<Point> _model, vector<Point> _normals, vector<Point> _texture,
@@ -29,6 +34,10 @@ public:
   vector<Point> getNormals() { return normals; }
   vector<Point> getTexture() { return texture; }
   Color getColor() { return color; }
+  AABox getAABox() { return box; }
+  void updateAABox(float * matrix);
+  void drawAABox();
+  void resetAABox();
 
   void draw(bool debugNormals);
   ~Model();

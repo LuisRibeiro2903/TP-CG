@@ -2,10 +2,10 @@
 
 void buildRotMatrix(float *x, float *y, float *z, float *m) {
 
-	m[0] = x[0]; m[1] = x[1]; m[2] = x[2]; m[3] = 0;
-	m[4] = y[0]; m[5] = y[1]; m[6] = y[2]; m[7] = 0;
-	m[8] = z[0]; m[9] = z[1]; m[10] = z[2]; m[11] = 0;
-	m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
+    m[0] = x[0]; m[1] = y[0]; m[2] = z[0]; m[3] = 0;
+    m[4] = x[1]; m[5] = y[1]; m[6] = z[1]; m[7] = 0;
+    m[8] = x[2]; m[9] = y[2]; m[10] = z[2]; m[11] = 0;
+    m[12] = 0; m[13] = 0; m[14] = 0; m[15] = 1;
 }
 
 
@@ -65,6 +65,16 @@ void multMatrixVector(float *m, float *v, float *res) {
 	}
 }
 
+void multMatrixVector3(float *m, float *v, float *res) {
+
+	for (int j = 0; j < 3; ++j) {
+		res[j] = 0;
+		for (int k = 0; k < 3; ++k) {
+			res[j] += v[k] * m[j * 3 + k];
+		}
+	}
+}
+
 void multiply(float * mat1,
               float * mat2,
               float * res) {
@@ -74,6 +84,14 @@ void multiply(float * mat1,
             res[i * 4 + j] = 0;
             for (k = 0; k < 4; k++)
                 res[i * 4 + j] += mat1[i * 4 + k] * mat2[k * 4 + j];
+        }
+    }
+}
+
+void transpose(float * m, float * mt) {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            mt[i * 4 + j] = m[j * 4 + i];
         }
     }
 }

@@ -182,7 +182,6 @@ void renderScene(void) {
   } else {
     if (fixedModelCenter.x() == 0 && fixedModelCenter.y() == 0 && fixedModelCenter.z() == 0) {
       gluLookAt(camX, camY, camZ, eyeX, eyeY, eyeZ, upX, upY, upZ);
-      strcpy(fixedModel, "");
       fixedCamera = false;
     }else {
       gluLookAt(fixedModelCenter.x() + 5, fixedModelCenter.y() + 5, fixedModelCenter.z() + 5, fixedModelCenter.x(), fixedModelCenter.y(), fixedModelCenter.z(), 0, 1, 0);

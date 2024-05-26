@@ -73,7 +73,7 @@ void Model::setBoundingBox() {
       max.setZ(p.z());
   }
 
-  this->box = AABox(min, max.x() - min.x(), max.y() - min.y(), max.z() - min.z());
+  this->box = AABox(min, max);
 
 }
 
@@ -143,12 +143,13 @@ Model::Model(vector<Point> _model, vector<Point> _normals,
     : model(_model), normals(_normals), texture(_texture), color(*_color), texPath(texPath) {}
 
 
-void Model::updateAABox(Transform &t) {
-  t.applyTransformToAABox(box);
-}
 
 void Model::drawAABox() {
   box.draw();
+}
+
+void Model::resetAABox() {
+  box.reset();
 }
 
 void Model::draw(bool debugNormals) {
@@ -198,6 +199,10 @@ void Model::draw(bool debugNormals) {
   }
 
 
+}
+
+void Model::updateAABox(float * matrix) {
+  box.transform(matrix);
 }
 
 Model::~Model() {

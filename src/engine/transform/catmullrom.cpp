@@ -86,6 +86,29 @@ void CatmullROM::alignCatmullRom(float *deriv) {
     glMultMatrixf(m);
 }
 
+void CatmullROM::alignCatmullRom(float *deriv, float * matrix_cpy, float * matrix) {
+
+    float m[16];
+
+    float X[3] = {deriv[0], deriv[1], deriv[2]};
+    normalize(X);
+
+    float Z[3];
+    cross(X, prev_y, Z);
+    normalize(Z);
+
+    float Y[3];
+    cross(Z, X, Y);
+    normalize(Y);
+
+    memcpy(prev_y, Y, 3*sizeof(float));
+
+    buildRotMatrix(X, Y, Z, m);
+
+
+    multiply(matrix_cpy, m, matrix);
+}
+
 void CatmullROM::applyTransform() {
 
     float pos[3], deriv[3];
@@ -104,11 +127,41 @@ void CatmullROM::applyTransform() {
 
 }
 
-void CatmullROM::applyTransformToAABox(AABox &box) {
+void CatmullROM::applyTransform(float * matrix) {
+
+    float pos[3], deriv[3];
+
+    float matrix_copy[16];
+
+    for (int i = 0; i < 16; i++) {
+        matrix_copy[i] = matrix[i];
+    }
     
+    renderCatmullRomCurve();
+
+    float t = ((float) glutGet(GLUT_ELAPSED_TIME) / 1000 ) / time;
+
+    getGlobalCatmullRomPoint(t, pos, deriv);
+
+    float translation_matrix[16] = {
+        1, 0, 0, pos[0],
+        0, 1, 0, pos[1],
+        0, 0, 1, pos[2],
+        0, 0, 0, 1
+    };
+
+    multiply(matrix_copy, translation_matrix, matrix);
+    
+    
+
+    if(align) {
+        for (int i = 0; i < 16; i++) {
+            matrix_copy[i] = matrix[i];
+        }
+        alignCatmullRom(deriv, matrix_copy, matrix);
+    }
+
 }
 
-void CatmullROM::applyTransform(float *matrix) {
-    
-}
+
 

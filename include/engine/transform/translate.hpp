@@ -13,7 +13,6 @@ public:
   Translate(float x, float y, float z);
   void applyTransform() override;
   void applyTransform(float *matrix) override;
-  void applyTransformToAABox(AABox &box) override;
 };
 
 #endif

@@ -7,19 +7,17 @@
 
 class AABox {
     public:
-        Point Ocorner;
-        float Ox, Oy, Oz;
-        Point efective_corner;
-        float efective_x, efective_y, efective_z;
+        Point Omin, Omax;
+        Point Emin, Emax;
 
-        AABox(Point &corner, float x, float y, float z);
+        AABox(Point &Omin, Point &Omax);
         AABox();
         ~AABox();
 
         Point getVertexP(const Point &normal);
         Point getVertexN(const Point &normal);
-        void translate(float x, float y, float z);
-        void scale(float x, float y, float z);
+        void transform(const float *matrix);
+        void reset();
 
         //These functions are used for debugging purposes
         std::vector<Point> generateVertices();

@@ -1,5 +1,6 @@
 #include "groups.hpp"
 #include "parser.hpp"
+#include "engine/frustum/frustumG.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -17,17 +18,33 @@
 
 float cam_alpha, cam_beta, cam_radius;
 
+float debugCam_alpha, debugCam_beta, debugCam_radius;
+
 float camX, camY, camZ;
 float eyeX, eyeY, eyeZ;
 float upX, upY, upZ;
+
+float debugCamX, debugCamY, debugCamZ;
+float debugEyeX, debugEyeY, debugEyeZ;
+float debugUpX, debugUpY, debugUpZ;
+
 float fov, near, far;
 
 bool wireframe = false;
 bool axis = true;
 bool debugNormals = false;
-bool debugBoxes = true;
+bool debugBoxes = false;
+bool frustumOn = false;
+bool debugCamera = false;
+
+int modelosDesenhados = 0, modelosTotais = 0;
+
+float frames = 0;
+
+float ratio = 0;
 
 ParsedWorld *world;
+FrustumG frustum;
 
 float time0 = 0;
 
@@ -39,7 +56,9 @@ void changeSize(int w, int h) {
     h = 1;
 
   // compute window's aspect ratio
-  float ratio = w * 1.0 / h;
+  ratio = w * 1.0 / h;
+
+  frustum.setCamInternals(fov, ratio, near, far);
 
   // Set the projection matrix as current
   glMatrixMode(GL_PROJECTION);
@@ -50,7 +69,11 @@ void changeSize(int w, int h) {
   glViewport(0, 0, w, h);
 
   // Set perspective
-  gluPerspective(fov, ratio, near, far);
+  if (debugCamera){
+    gluPerspective(90, ratio, 0.1f, 1000);
+  } else {
+    gluPerspective(fov, ratio, near, far);
+  }
 
   // return to the model view matrix mode
   glMatrixMode(GL_MODELVIEW);
@@ -66,17 +89,23 @@ void renderScene(void) {
   // Clear Color and Depth Buffers
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  char s[256];
   // Reset transformations
   glLoadIdentity();
-  gluLookAt(camX, camY, camZ, eyeX, eyeY, eyeZ, upX, upY, upZ);
+  if(debugCamera) {
+    gluLookAt(debugCamX, debugCamY, debugCamZ, debugEyeX, debugEyeY, debugEyeZ, debugUpX, debugUpY, debugUpZ);
+    frustum.drawFrustum(debugNormals);
+  } else {
+    gluLookAt(camX, camY, camZ, eyeX, eyeY, eyeZ, upX, upY, upZ);
+  }
 
   if (wireframe)
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   else
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-  glDisable(GL_LIGHTING);
   if (axis) {
+    glDisable(GL_LIGHTING); 
     // Draw axis
     glBegin(GL_LINES);
     // X axis in red
@@ -92,64 +121,136 @@ void renderScene(void) {
     glVertex3f(0.0f, 0.0f, -100.0f);
     glVertex3f(0.0f, 0.0f, 100.0f);
     glEnd();
+    glEnable(GL_LIGHTING);
   }
-
-
-  glEnable(GL_LIGHTING);
 
   // Draw the lights
   renderLights();
 
   // draw the scene
-  world->rootGroup->draw(debugNormals, debugBoxes);
+  modelosDesenhados = 0;
+  frustum.setCamDef(camX, camY, camZ, eyeX, eyeY, eyeZ, upX, upY, upZ);
+  float matrix[16] = {
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+  };
+  world->rootGroup->resetAABox();
+  world->rootGroup->draw(debugNormals, frustumOn, &modelosDesenhados, &frustum, matrix);
+  if (debugBoxes)
+    world->rootGroup->drawAABox();
+
+  frames++;
+	int time = glutGet(GLUT_ELAPSED_TIME);
+	float fps;
+	if (time - time0 > 1000) {
+		fps = frames*1000.0/(time-time0);
+		time0 = time;
+		frames = 0;
+		sprintf(s, "FPS: %.2f; Modelos totais: %d; Modelos desenhados: %d", fps, modelosTotais, modelosDesenhados);
+		glutSetWindowTitle(s);
+	}
 
   glutSwapBuffers();
 }
 
 void updatePos() {
-  camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
-  camY = cam_radius * sin(cam_beta);
-  camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
+  if(debugCamera) {
+    debugCamX = debugCam_radius * sin(debugCam_alpha) * cos(debugCam_beta);
+    debugCamY = debugCam_radius * sin(debugCam_beta);
+    debugCamZ = debugCam_radius * cos(debugCam_alpha) * cos(debugCam_beta);
+  } else {
+    camX = cam_radius * sin(cam_alpha) * cos(cam_beta);
+    camY = cam_radius * sin(cam_beta);
+    camZ = cam_radius * cos(cam_alpha) * cos(cam_beta);
+  }
 }
 
 void handleSpecialKeys(int key, int x, int y) {
   switch (key) {
   case GLUT_KEY_PAGE_DOWN: {
-    cam_radius -= RADIUS_STEP;
+    if (debugCamera) {
+      debugCam_radius -= RADIUS_STEP;
+    } else {
+      cam_radius -= RADIUS_STEP;
+    }
     if (cam_radius < 2)
       cam_radius = 2;
+    if (debugCam_radius < 2)
+      debugCam_radius = 2;
     break;
   }
   case GLUT_KEY_PAGE_UP: {
-    cam_radius += RADIUS_STEP;
+    if (debugCamera) {
+      debugCam_radius += RADIUS_STEP;
+    } else {
+      cam_radius += RADIUS_STEP;
+    }
     break;
   }
   }
   updatePos();
 }
 
+void switchCameras() {
+  bool debug = !debugCamera;
+  if (debug) {
+    debugCamX = camX + 4;
+    debugCamY = camY + 1;
+    debugCamZ = camZ + 4;
+    debugEyeX = camX;
+    debugEyeY = camY;
+    debugEyeZ = camZ;
+    debugUpX = upX;
+    debugUpY = upY;
+    debugUpZ = upZ;
+    debugCam_radius = sqrt(debugCamX * debugCamX + debugCamY * debugCamY + debugCamZ * debugCamZ);
+    debugCam_alpha = atan2f(debugCamX, debugCamZ);
+    debugCam_beta = asinf(debugCamY / cam_radius);
+  }
+  debugCamera = debug;
+  int width = glutGet(GLUT_WINDOW_WIDTH);
+  int height = glutGet(GLUT_WINDOW_HEIGHT);
+  changeSize(width, height);
+}
+
 void handleKeyboard(unsigned char key, int x, int y) {
   switch (key) {
     case 'w': {
-      if (cam_beta < 1.5f)
-        cam_beta += ANGLE_STEP;
-
+      if (debugCamera) {
+        if (debugCam_beta < 1.5f)
+          debugCam_beta += ANGLE_STEP;
+      } else {
+        if (cam_beta < 1.5f)
+          cam_beta += ANGLE_STEP;
+      }
       break;
     }
     case 's': {
-      if (cam_beta > -1.5f)
-        cam_beta -= ANGLE_STEP;
-
+      if(debugCamera) {
+        if (debugCam_beta > -1.5f)
+          debugCam_beta -= ANGLE_STEP;
+      } else {
+        if (cam_beta > -1.5f)
+          cam_beta -= ANGLE_STEP;
+      }
       break;
     }
     case 'a': {
-      cam_alpha -= ANGLE_STEP;
-
+      if (debugCamera) {
+        debugCam_alpha -= ANGLE_STEP;
+      } else { 
+        cam_alpha -= ANGLE_STEP;
+      }
       break;
     }
     case 'd': {
-      cam_alpha += ANGLE_STEP;
-
+      if (debugCamera) {
+        debugCam_alpha += ANGLE_STEP;
+      } else {
+        cam_alpha += ANGLE_STEP;
+      }
       break;
     }
     case 'p': {
@@ -166,6 +267,14 @@ void handleKeyboard(unsigned char key, int x, int y) {
     }
     case 'b': {
       debugBoxes = !debugBoxes;
+      break;
+    }
+    case 'f': {
+      frustumOn = !frustumOn;
+      break;
+    }
+    case 'c': {
+      switchCameras();
       break;
     }
   }
@@ -191,6 +300,7 @@ void initializeLights() {
 
 void init(std::string input_file_name) {
   world = worldParser(input_file_name.c_str());
+  frustum = FrustumG();
 
   camX = world->lookAt[0].x();
   camY = world->lookAt[0].y();
@@ -209,8 +319,8 @@ void init(std::string input_file_name) {
   cam_radius = sqrt(camX * camX + camY * camY + camZ * camZ);
   cam_alpha = atan2f(camX, camZ);
   cam_beta = asinf(camY / cam_radius);
+  frustum.setCamInternals(fov, world->windowWidth / world->windowHeight, near, far);
 
-  time0 = glutGet(GLUT_ELAPSED_TIME);
 }
 
 int main(int argc, char **argv) {
@@ -247,8 +357,11 @@ int main(int argc, char **argv) {
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_RESCALE_NORMAL);
 
+  time0 = glutGet(GLUT_ELAPSED_TIME);
+
   // We only obtain the window width and height after parsing the file
   world->rootGroup->initVBOs();
+  modelosTotais = world->rootGroup->totalModels();
   initializeLights();
 
 

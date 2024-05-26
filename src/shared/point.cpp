@@ -63,3 +63,15 @@ void Point::handleIsNan()
     if (std::isnan(_y)) _y = 0;
     if (std::isnan(_z)) _z = 0;
 }
+
+float Point::innerProduct(Point &p)
+{
+    return (_x * p.x() + _y * p.y() + _z * p.z());
+}
+
+void Point::copy(Point &p)
+{
+    _x = p.x();
+    _y = p.y();
+    _z = p.z();
+}

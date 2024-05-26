@@ -12,6 +12,8 @@ class FrustumG {
             TOP = 0, BOTTOM, LEFT,
             RIGHT, NEARP, FARP
         };
+
+        void drawNormals();
         
     public:
         enum {OUTSIDE, INTERSECT, INSIDE};
@@ -24,9 +26,9 @@ class FrustumG {
         ~FrustumG();
 
         void setCamInternals(float angle, float ratio, float nearD, float farD);
-        void setCamDef(Point &p, Point &l, Point &u);
+        void setCamDef(float pX, float pY, float pZ, float lX, float lY, float lZ, float uX, float uY, float uZ);
         int pointInFrustum(Point &p);
-        int sphereInFrustum(Point &p, float radius);
+        void drawFrustum(bool debugNormals);
         int boxInFrustum(AABox &b);
 };
 

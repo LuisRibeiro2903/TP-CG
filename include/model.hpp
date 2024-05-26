@@ -34,8 +34,10 @@ public:
   vector<Point> getNormals() { return normals; }
   vector<Point> getTexture() { return texture; }
   Color getColor() { return color; }
-  void updateAABox(Transform &t);
+  AABox getAABox() { return box; }
+  void updateAABox(float * matrix);
   void drawAABox();
+  void resetAABox();
 
   void draw(bool debugNormals);
   ~Model();

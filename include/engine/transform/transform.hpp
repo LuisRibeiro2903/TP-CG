@@ -11,7 +11,6 @@ class Transform {
 public:
   virtual void applyTransform() = 0;
   virtual void applyTransform(float *matrix) = 0;
-  virtual void applyTransformToAABox(AABox &box) = 0;
 };
 
 #endif

@@ -15,7 +15,6 @@ public:
   Rotate(float angleOrTime, float x, float y, float z, bool isTime);
   void applyTransform() override;
   void applyTransform(float *matrix) override;
-  void applyTransformToAABox(AABox &box) override;
 };
 
 #endif

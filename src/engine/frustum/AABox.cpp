@@ -1,31 +1,15 @@
 #include "engine/frustum/AABox.hpp"
-#include "point.hpp"
+
+#include "cgmath.hpp"
 
 #include <GL/glut.h>
 
-AABox::AABox(Point &corner, float x, float y, float z)
-{
-    this->Ocorner = corner;
-    this->Ox = x;
-    this->Oy = y;
-    this->Oz = z;
-    this->efective_corner = corner;
-    this->efective_x = x;
-    this->efective_y = y;
-    this->efective_z = z;
+AABox::AABox(Point &Omin, Point &Omax) : Omin(Omin), Omax(Omax) {
+  Emin = Omin;
+  Emax = Omax;
 }
 
-AABox::AABox()
-{
-    Ocorner = Point();
-    Ox = 1.0f;
-    Oy = 1.0f;
-    Oz = 1.0f;
-    efective_corner = Ocorner;
-    efective_x = Ox;
-    efective_y = Oy;
-    efective_z = Oz;
-}
+AABox::AABox() {}
 
 AABox::~AABox()
 {
@@ -33,39 +17,43 @@ AABox::~AABox()
 
 
 
-Point AABox::getVertexP(const Point &normal)
-{
-    Point res = efective_corner;
-    if (normal.x() > 0) res.setX(res.x() + efective_x);
-    if (normal.y() > 0) res.setY(res.y() + efective_y);
-    if (normal.z() > 0) res.setZ(res.z() + efective_z);
+Point AABox::getVertexP(const Point &normal) {
 
-    return res;
+    Point result;
+
+    result.setX(normal.x() > 0 ? Emax.x() : Emin.x());
+    result.setY(normal.y() > 0 ? Emax.y() : Emin.y());
+    result.setZ(normal.z() > 0 ? Emax.z() : Emin.z());
+
+    return result;
+
 }
 
-Point AABox::getVertexN(const Point &normal)
-{
-    Point res = efective_corner;
-    if (normal.x() < 0) res.setX(res.x() + efective_x);
-    if (normal.y() < 0) res.setY(res.y() + efective_y);
-    if (normal.z() < 0) res.setZ(res.z() + efective_z);
+Point AABox::getVertexN(const Point &normal) {
 
-    return res;
+    Point result;
+
+    result.setX(normal.x() > 0 ? Emin.x() : Emax.x());
+    result.setY(normal.y() > 0 ? Emin.y() : Emax.y());
+    result.setZ(normal.z() > 0 ? Emin.z() : Emax.z());
+
+    return result;
 }
 
-std::vector<Point> AABox::generateVertices()
-{
-    std::vector<Point> res;
-    res.push_back(efective_corner);
-    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y(), efective_corner.z()));
-    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y() + efective_y, efective_corner.z()));
-    res.push_back(Point(efective_corner.x(), efective_corner.y() + efective_y, efective_corner.z()));
-    res.push_back(Point(efective_corner.x(), efective_corner.y(), efective_corner.z() + efective_z));
-    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y(), efective_corner.z() + efective_z));
-    res.push_back(Point(efective_corner.x() + efective_x, efective_corner.y() + efective_y, efective_corner.z() + efective_z));
-    res.push_back(Point(efective_corner.x(), efective_corner.y() + efective_y, efective_corner.z() + efective_z));
+std::vector<Point> AABox::generateVertices() {
 
-    return res;
+    std::vector<Point> vertices;
+
+    vertices.push_back(Emin);
+    vertices.push_back(Point(Emax.x(), Emin.y(), Emin.z()));
+    vertices.push_back(Point(Emax.x(), Emax.y(), Emin.z()));
+    vertices.push_back(Point(Emin.x(), Emax.y(), Emin.z()));
+    vertices.push_back(Point(Emin.x(), Emin.y(), Emax.z()));
+    vertices.push_back(Point(Emax.x(), Emin.y(), Emax.z()));
+    vertices.push_back(Emax);
+    vertices.push_back(Point(Emin.x(), Emax.y(), Emax.z()));
+    
+    return vertices;
 }
 
 void AABox::draw()
@@ -90,17 +78,38 @@ void AABox::draw()
     glEnable(GL_LIGHTING);
 }
 
-void AABox::translate(float x, float y, float z)
-{
-    efective_corner.setX(Ocorner.x() + x);
-    efective_corner.setY(Ocorner.y() + y);
-    efective_corner.setZ(Ocorner.z() + z);
+void AABox::reset() {
+    Emin = Omin;
+    Emax = Omax;
 }
 
-void AABox::scale(float x, float y, float z)
-{
-    efective_corner = Ocorner * Point(x, y, z);
-    efective_x = Ox * x;
-    efective_y = Oy * y;
-    efective_z = Oz * z;
+void AABox::transform(const float * matrix) {
+
+    Point center = (Omax + Omin) * 0.5;
+
+    Point extents = Omax - center;
+
+    float new_center[4];
+
+    multMatrixVector((float *)matrix, new float[4]{center.x(), center.y(), center.z(), 1}, new_center);
+
+    Point t_center (new_center[0], new_center[1], new_center[2]);
+
+    float abs_matrix[9] = 
+    {
+        fabs(matrix[0]), fabs(matrix[1]), fabs(matrix[2]),
+        fabs(matrix[4]), fabs(matrix[5]), fabs(matrix[6]),
+        fabs(matrix[8]), fabs(matrix[9]), fabs(matrix[10])
+    };
+
+    float t_extents[3];
+
+    multMatrixVector3(abs_matrix, extents.data(), t_extents);
+
+    Point tmin = t_center - Point(t_extents[0], t_extents[1], t_extents[2]);
+    Point tmax = t_center + Point(t_extents[0], t_extents[1], t_extents[2]);
+
+    Emin = tmin;
+    Emax = tmax;
+
 }

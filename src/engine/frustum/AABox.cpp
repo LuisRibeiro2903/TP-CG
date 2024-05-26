@@ -113,3 +113,7 @@ void AABox::transform(const float * matrix) {
     Emax = tmax;
 
 }
+
+void AABox::getCenter(Point &center) {
+    center = (Emin + Emax) * 0.5;
+}

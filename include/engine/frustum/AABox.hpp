@@ -22,6 +22,7 @@ class AABox {
         //These functions are used for debugging purposes
         std::vector<Point> generateVertices();
         void draw();
+        void getCenter(Point &center);
 
 };
 

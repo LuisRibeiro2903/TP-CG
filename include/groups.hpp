@@ -25,11 +25,12 @@ public:
   GroupNode(vector<GroupNode *> &_sub_nodes, vector<Transform *> &_transforms,
             vector<Model *> &_models);
   GroupNode();
-  void draw(bool debugNormals, bool frustumOn, int * modelosDesenhados, FrustumG *frustum, float * matrixToAABox);
+  void draw(bool debugNormals, bool frustumOn, int * modelosDesenhados, FrustumG *frustum, float * matrixToAABox, char * name, Point &fixedCenter);
   void initVBOs();
   void addTransform(Transform *transform);
   void addModel(Model *m);
   int totalModels();
+  vector<string *> getNames();
   void addSubNode(GroupNode *node);
   void drawAABox();
   void resetAABox();

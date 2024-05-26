@@ -109,7 +109,7 @@ void GroupNode::drawAABox() {
 }
 
 
-void GroupNode::draw(bool debugNormals, bool frustumOn, int * modelosDesenhados, FrustumG *frustum, float * matrixToAABox) {
+void GroupNode::draw(bool debugNormals, bool frustumOn, int * modelosDesenhados, FrustumG *frustum, float * matrixToAABox, char * name, Point &fixedCenter) {
   glPushMatrix();
 
 
@@ -130,7 +130,8 @@ void GroupNode::draw(bool debugNormals, bool frustumOn, int * modelosDesenhados,
   for (Model *m : models) {
     AABox box = m->getAABox();
     if (!frustumOn || (frustum->boxInFrustum(box) != FrustumG::OUTSIDE)) {
-      m->draw(debugNormals);
+      if (m->draw(debugNormals, name))
+        box.getCenter(fixedCenter);
       (*modelosDesenhados)++;
     }
   }
@@ -138,8 +139,22 @@ void GroupNode::draw(bool debugNormals, bool frustumOn, int * modelosDesenhados,
   for (GroupNode *node : sub_nodes) {
     float matrixToAABox2[16];
     memcpy(matrixToAABox2, matrixToAABox, sizeof(matrixToAABox2));
-    node->draw(debugNormals, frustumOn, modelosDesenhados, frustum, matrixToAABox2);
+    node->draw(debugNormals, frustumOn, modelosDesenhados, frustum, matrixToAABox2, name, fixedCenter);
   }
 
   glPopMatrix();
+}
+
+vector<string *> GroupNode::getNames() {
+  vector<string *> names;
+  for (Model *m : models) {
+    names.push_back(m->getName());
+  }
+
+  for (GroupNode *node : sub_nodes) {
+    vector<string *> subNames = node->getNames();
+    names.insert(names.end(), subNames.begin(), subNames.end());
+  }
+
+  return names;
 }

@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <IL/il.h>
 #include <tuple>
+#include <iostream>
+#include <cstring>
 
 using namespace std;
 
@@ -160,7 +162,10 @@ bool Model::draw(bool debugNormals, char * nameF) {
   if (texID != -1)
     vboTexture = get<2>(vbos);
   bool fixed = false;
-  if (nameF != nullptr && name != nullptr && *name == nameF) {
+  char tmpName[100];
+  strcpy(tmpName, this->name->c_str());
+
+  if (nameF != nullptr && name != nullptr && !strcmp(tmpName, nameF)) {
     fixed = true;
   }
 

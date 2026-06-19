@@ -4,8 +4,6 @@ A small C++/OpenGL graphics engine developed for a university Computer Graphics 
 
 The project loads XML scene descriptions, renders generated 3D models, and includes several coursework features such as transformations, textures, lighting, Catmull-Rom animation paths, Bezier patch models, debug controls, and frustum culling.
 
-This repository is kept close to the original university project. The goal of the current cleanup is to make it easier to understand, build, and discuss in an interview without rewriting it as a modern engine.
-
 ![Solar system scene rendered by the engine](solar_system.png)
 
 ## Features

@@ -234,7 +234,7 @@ GroupNode *ParseGroupElement(tinyxml2::XMLElement *groupElement) {
     }
   }
 
-  // TODO: Finalizar
+  // TODO: Finish this section.
   tinyxml2::XMLElement *modelsElement =
       groupElement->FirstChildElement("models");
   if (modelsElement) {

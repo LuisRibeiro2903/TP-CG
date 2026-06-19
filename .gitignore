@@ -1,6 +1,24 @@
 build/
-ajuda
 .cache/
+
+# Local notes / scratch files
+ajuda/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Editor configuration
+.vscode/
+.idea/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+Makefile
+
 # Prerequisites
 *.d
 

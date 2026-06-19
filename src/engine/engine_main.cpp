@@ -239,7 +239,7 @@ void renderScene(void) {
 		fps = frames*1000.0/(time-time0);
 		time0 = time;
 		frames = 0;
-		sprintf(s, "CG_ENGINE | FPS: %.2f; Modelos totais: %d; Modelos desenhados: %d", fps, modelosTotais, modelosDesenhados);
+		sprintf(s, "CG_ENGINE | FPS: %.2f; Total models: %d; Drawn models: %d", fps, modelosTotais, modelosDesenhados);
 		glutSetWindowTitle(s);
 	}
 
@@ -442,7 +442,7 @@ int main(int argc, char **argv) {
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(world->windowWidth, world->windowHeight);
-  // TODO: Ouvi dizer que era para alterar isto :(
+  // TODO: Review this window setup.
   glutCreateWindow("CG_ENGINE");
   glutDisplayFunc(renderScene);
   glutIdleFunc(renderScene);
